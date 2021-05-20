@@ -1,11 +1,10 @@
 #include <iostream>
-#include "GUI.h"
+#include "Controller.h"
 
 int main() {
-
-    GUI gui = GUI();
-
-    gui.display();
+    
+    Controller controller;
+    controller.startGUI();
 
     return 0;
 }

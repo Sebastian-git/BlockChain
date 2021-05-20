@@ -1,7 +1,8 @@
 #include "TextBox.h"
+#include "GUI.h"
 #include <iostream>
 
-TextBox::TextBox() : pos(), box(), boxSize(), boxColor(), thickness(3), text(), textColor(), textSize(40), textMargin(10), doBlink(false), seeCursor(false), cooldown(500), prevTime(0) {
+TextBox::TextBox(GUI* gui) : gui(gui), pos(), box(), boxSize(), boxColor(), thickness(3), text(), textColor(), textSize(40), textMargin(10), doBlink(false), seeCursor(false), cooldown(250), prevTime(0) {
 	setBoxThickness(3);
 	setBoxSize(sf::Vector2f(200, 200));
 	setPos(sf::Vector2f(0, 0));
@@ -127,7 +128,7 @@ void TextBox::disableCursor() {
 }
 
 void TextBox::pauseCursor() {
-	cooldown = 1000000000;
+	cooldown = (int)1e6;
 	cursor.setPosition({ (text.getLocalBounds().width + text.getPosition().x), cursor.getPosition().y });
 	cursor.setString("|");
 }
@@ -154,7 +155,6 @@ void TextBox::addEventHandler(sf::RenderWindow& window, sf::Event event) {
 	sf::FloatRect bounds = box.getGlobalBounds();
 	sf::Vector2i mousePos = sf::Mouse::getPosition(window);
 
-
 	// When user clicks
 	if (event.type == sf::Event::MouseButtonPressed) {
 		if (mousePos.x > bounds.left && mousePos.x < bounds.width + bounds.left && mousePos.y > bounds.top && mousePos.y < bounds.height + bounds.top) {
@@ -167,8 +167,16 @@ void TextBox::addEventHandler(sf::RenderWindow& window, sf::Event event) {
 
 	// When user types
 	if (doBlink && event.type == sf::Event::TextEntered) {
-		pauseCursor();
-		text.setString(text.getString() + static_cast<char>(event.text.unicode));
-		resumeCursor();
+		if (event.text.unicode == 13) { // If user types enter
+			gui->handleTransaction();
+		} else if (event.text.unicode == 8) { // If user types backspace
+			text.setString(text.getString().substring(0, text.getString().getSize() - 1));
+		}
+		else { // Normal keys
+			pauseCursor();
+			text.setString(text.getString() + static_cast<char>(event.text.unicode));
+			resumeCursor();
+		}
+
 	}
 }

@@ -36,3 +36,6 @@
 *.vcxproj
 */x64/*
 x64/*
+
+# Database information
+*.txt

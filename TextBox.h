@@ -1,10 +1,12 @@
 #pragma once
 #include "GUIComponent.h"
 
+class GUI;
+
 class TextBox : public GUIComponent {
 
 public:
-	TextBox();
+	TextBox(GUI* gui);
 
 	void setPos(sf::Vector2f pos);
 	sf::Vector2f getPos();
@@ -36,6 +38,8 @@ public:
 	virtual void addEventHandler(sf::RenderWindow& window, sf::Event event);
 
 private:
+	GUI* gui; // Pointer to GUI class to pass text data for transaction handler
+
 	sf::Vector2f pos; // Position of all textbox components
 
 	sf::RectangleShape box; // Box

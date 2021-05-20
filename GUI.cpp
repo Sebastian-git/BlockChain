@@ -1,10 +1,21 @@
 #include "GUI.h"
-#include "TextBox.h"
-#include "TextLabel.h"
+#include "Controller.h"
 #include <iostream>
 
-GUI::GUI() : windowSize(sf::Vector2f(1200, 800)), margin(20) {
+GUI::GUI(Controller* controller) : windowSize(sf::Vector2f(1200, 800)), margin(20), usernameLabel(), usernameTextbox(this), passwordLabel(), passwordTextbox(this), recipientLabel(), recipientTextbox(this), quantityLabel(), quantityTextbox(this), dollarLabel(), controller(controller) {}
 
+void GUI::handleTransaction() {
+    data.push_back(usernameTextbox.getText());
+    data.push_back(passwordTextbox.getText());
+    data.push_back(recipientTextbox.getText());
+    data.push_back(quantityTextbox.getText());
+    controller->handleTransaction(data);
+    data.clear();
+    std::cout << "New data:\n";
+    for (int i = 0; i < data.size(); i++) {
+        std::cout << data[i] << "\n";
+    }
+    std::cout << "\n";
 }
 
 void GUI::display() {
@@ -13,42 +24,49 @@ void GUI::display() {
 
     float labelPosX = windowSize.x / (float)15;
 
+    float boxSizeX = windowSize.x / 2;
+    float boxSizeY = windowSize.y / (float)15;
+
+
 
     // Username GUI components
-    TextLabel usernameLabel = TextLabel();
     usernameLabel.setText("Username");
     usernameLabel.setPos(sf::Vector2f(labelPosX, windowSize.y / 15));
 
-    TextBox usernameTextbox = TextBox();
     usernameTextbox.setPos(sf::Vector2f(usernameLabel.getBounds().width + usernameLabel.getPos().x + margin, usernameLabel.getPos().y));
-    usernameTextbox.setBoxSize(sf::Vector2f(windowSize.x / 2, windowSize.y / 15));
+    usernameTextbox.setBoxSize(sf::Vector2f(boxSizeX, boxSizeY));
+
+
+
+    // Password GUI components
+    passwordLabel.setText("Password");
+    passwordLabel.setPos(sf::Vector2f(labelPosX, windowSize.y / 4));
+
+    passwordTextbox.setPos(sf::Vector2f(passwordLabel.getBounds().width + passwordLabel.getPos().x + margin, passwordLabel.getPos().y));
+    passwordTextbox.setBoxSize(sf::Vector2f(boxSizeX, boxSizeY));
 
 
 
     // Recipient GUI components
-    TextLabel recipientLabel = TextLabel();
     recipientLabel.setText("Recipient");
-    recipientLabel.setPos(sf::Vector2f(labelPosX, windowSize.y / 4));
+    recipientLabel.setPos(sf::Vector2f(labelPosX, windowSize.y / 2.4f));
 
-    TextBox recipientTextbox = TextBox();
     recipientTextbox.setPos(sf::Vector2f(recipientLabel.getBounds().width + recipientLabel.getPos().x + margin, recipientLabel.getPos().y));
-    recipientTextbox.setBoxSize(sf::Vector2f(windowSize.x / 2, windowSize.y / 15));
+    recipientTextbox.setBoxSize(sf::Vector2f(boxSizeX, boxSizeY));
 
 
 
     // Quantity GUI components
-    TextLabel quantityLabel = TextLabel();
     quantityLabel.setText("Quantity");
-    quantityLabel.setPos(sf::Vector2f(labelPosX, windowSize.y / (float)2.15));
+    quantityLabel.setPos(sf::Vector2f(labelPosX, windowSize.y / 1.7f));
    
-    TextBox quantityTextbox = TextBox();
     quantityTextbox.setPos(sf::Vector2f(quantityLabel.getBounds().width + quantityLabel.getPos().x + margin, quantityLabel.getPos().y));
-    quantityTextbox.setBoxSize(sf::Vector2f(windowSize.x / 2, windowSize.y / 15));
+    quantityTextbox.setBoxSize(sf::Vector2f(boxSizeX, windowSize.y / 15));
     quantityTextbox.setTextMargin(40);
 
-    TextLabel dollarLabel = TextLabel();
     dollarLabel.setText("$");
     dollarLabel.setPos(sf::Vector2f(quantityTextbox.getPos().x + 10, quantityTextbox.getPos().y));
+
 
 
     while (window.isOpen())
@@ -58,11 +76,13 @@ void GUI::display() {
         {
             if (event.type == sf::Event::Closed) window.close();
             usernameTextbox.addEventHandler(window, event);
+            passwordTextbox.addEventHandler(window, event);
             recipientTextbox.addEventHandler(window, event);
             quantityTextbox.addEventHandler(window, event);
         }
 
         usernameTextbox.update();
+        passwordTextbox.update();
         recipientTextbox.update();
         quantityTextbox.update();
 
@@ -70,6 +90,9 @@ void GUI::display() {
 
         window.draw(usernameTextbox);
         window.draw(usernameLabel);
+
+        window.draw(passwordTextbox);
+        window.draw(passwordLabel);
 
         window.draw(recipientLabel);
         window.draw(recipientTextbox);
