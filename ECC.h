@@ -1,5 +1,6 @@
 #pragma once
-#include "bigint.h"
+#include <vector>
+#include <string>
 
 class ECC {
 
@@ -8,11 +9,11 @@ public:
 
 	int modECC(int randNum, int N); // Extended Euclidean Algorithm, "division" for elliptic curves
 
-	int multECC(int gX, int gY, int privKey); // Multiplication for elliptic curves, double and add
+	int multECC(int gX, int gY); // Multiplication for elliptic curves, double and add
 
-	void addECC(int P[], int Q[], std::vector<float>& r); // Addition invented for elliptic curves, adding 2 points
+	void addECC(int P[], int Q[], std::vector<int>& r); // Addition invented for elliptic curves, adding 2 points
 
-	void doubleECC(int P[], std::vector<float>& r);
+	void doubleECC(int P[], std::vector<int>& r);
 
 private:
 	// Curve parameters
@@ -20,16 +21,13 @@ private:
 	// Coefficients of curve
 	int aCurve;
 	int bCurve;
-	bigint N; // Number of points on domain
+	std::string N; // Number of points on domain
 
 	// Generator point, random number in range of curve
 	int gX;
 	int gY;
 
-	float xR;
-	float yR;
-
-	bigint privKey; // Randomly generated private key
+	std::string privKey; // Randomly generated private key
 	int pubKey; // Randomly generated public key
 	int hashedData; // Hash of message/transaction
 
