@@ -8,4 +8,5 @@ void Controller::startGUI() {
 
 void Controller::handleTransaction(std::vector<std::string> data) {
 	transactionHandler.saveUserInfo(data);
+	transactionHandler.addBlock(data);
 }

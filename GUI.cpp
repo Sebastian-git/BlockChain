@@ -11,11 +11,6 @@ void GUI::handleTransaction() {
     data.push_back(quantityTextbox.getText());
     controller->handleTransaction(data);
     data.clear();
-    std::cout << "New data:\n";
-    for (int i = 0; i < data.size(); i++) {
-        std::cout << data[i] << "\n";
-    }
-    std::cout << "\n";
 }
 
 void GUI::display() {

@@ -1,4 +1,5 @@
 #include "TransactionHandler.h"
+#include "ECC.h"
 #include <iostream>
 #include <fstream>
 

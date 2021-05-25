@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <boost/multiprecision/cpp_int.hpp>
+
+//using boost::multiprecision::cpp_int;
 
 class ECC {
 
@@ -21,15 +24,14 @@ private:
 	// Coefficients of curve
 	int aCurve;
 	int bCurve;
-	std::string N; // Number of points on domain
+	boost::multiprecision::cpp_int N; // Number of points on domain
 
 	// Generator point, random number in range of curve
-	int gX;
-	int gY;
+	boost::multiprecision::cpp_int gX;
+	boost::multiprecision::cpp_int gY;
 
-	std::string privKey; // Randomly generated private key
-	int pubKey; // Randomly generated public key
-	int hashedData; // Hash of message/transaction
+	boost::multiprecision::cpp_int privKey; // Randomly generated private key
+	boost::multiprecision::cpp_int pubKey; // Randomly generated public key
+	boost::multiprecision::cpp_int hashedData; // Hash of message/transaction
 
 };
-

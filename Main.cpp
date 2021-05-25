@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include "Controller.h"
 
 int main() {

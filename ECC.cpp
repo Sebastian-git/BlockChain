@@ -4,10 +4,9 @@
 #include <cmath>
 #include <bitset>
 
-ECC::ECC() : curve((int)(pow(2, 3) - pow(2, 32) - pow(2, 9) - pow(2, 8) - pow(2, 7) - pow(2, 6) - pow(2, 4) - 1)), N("115792089237316195423570985008687907852837564279074904382605163141518161494337"), aCurve(0), bCurve(7), gX(), gY(), privKey("75263518707598184987916378021939673586055614731957507592904438851787542395619"), pubKey(), hashedData() {
+ECC::ECC() : curve((int)(pow(2, 3) - pow(2, 32) - pow(2, 9) - pow(2, 8) - pow(2, 7) - pow(2, 6) - pow(2, 4) - 1)), N(), aCurve(0), bCurve(7), gX(), gY(), privKey(), pubKey(), hashedData() {
 
-	std::cout << "Privkey size " << privKey.size() << "\n";
-	std::cout << "n size " << N.size() << "\n";
+	N = (boost::multiprecision::cpp_int)(2);
 }
 
 int ECC::modECC(int randNum, int N) {
@@ -15,12 +14,13 @@ int ECC::modECC(int randNum, int N) {
 }
 
 int ECC::multECC(int gX, int gY) {
+	/*
 	if (privKey.size() == 0 || privKey.size() >= N.size()) {
 		std::cout << "Invalid private key.\n";
 	}
 	std::bitset<8> binary = std::bitset<8>(privKey);
 	std::cout << binary << "\n";
-
+	*/
 	return 1;
 }
 

@@ -1,6 +1,5 @@
 #include "TextBox.h"
 #include "GUI.h"
-#include "ECC.h"
 #include <iostream>
 
 TextBox::TextBox(GUI* gui) : gui(gui), pos(), box(), boxSize(), boxColor(), thickness(3), text(), textColor(), textSize(40), textMargin(10), doBlink(false), seeCursor(false), cooldown(250), prevTime(0) {
@@ -169,9 +168,7 @@ void TextBox::addEventHandler(sf::RenderWindow& window, sf::Event event) {
 	// When user types
 	if (doBlink && event.type == sf::Event::TextEntered) {
 		if (event.text.unicode == 13) { // If user types enter
-			//gui->handleTransaction();
-			ECC ecc = ECC();
-			ecc.multECC(1, 2);
+			gui->handleTransaction();
 		} else if (event.text.unicode == 8) { // If user types backspace
 			text.setString(text.getString().substring(0, text.getString().getSize() - 1));
 		}
