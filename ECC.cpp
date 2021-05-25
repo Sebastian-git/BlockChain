@@ -4,9 +4,9 @@
 #include <cmath>
 #include <bitset>
 
+
 ECC::ECC() : curve((int)(pow(2, 3) - pow(2, 32) - pow(2, 9) - pow(2, 8) - pow(2, 7) - pow(2, 6) - pow(2, 4) - 1)), N(), aCurve(0), bCurve(7), gX(), gY(), privKey(), pubKey(), hashedData() {
 
-	N = (boost::multiprecision::cpp_int)(2);
 }
 
 int ECC::modECC(int randNum, int N) {

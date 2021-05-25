@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
-#include <boost/multiprecision/cpp_int.hpp>
+#include "InfInt.h"
 
 //using boost::multiprecision::cpp_int;
 
@@ -24,14 +24,14 @@ private:
 	// Coefficients of curve
 	int aCurve;
 	int bCurve;
-	boost::multiprecision::cpp_int N; // Number of points on domain
+	InfInt N; // Number of points on domain
 
 	// Generator point, random number in range of curve
-	boost::multiprecision::cpp_int gX;
-	boost::multiprecision::cpp_int gY;
+	InfInt gX;
+	InfInt gY;
 
-	boost::multiprecision::cpp_int privKey; // Randomly generated private key
-	boost::multiprecision::cpp_int pubKey; // Randomly generated public key
-	boost::multiprecision::cpp_int hashedData; // Hash of message/transaction
+	InfInt privKey; // Randomly generated private key
+	InfInt pubKey; // Randomly generated public key
+	InfInt hashedData; // Hash of message/transaction
 
 };
