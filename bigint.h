@@ -62,8 +62,6 @@ using namespace std;
 
 class bigint {
 private:
-    string str; // only data memeber for strong Big Integer as String. [For signed int, str[0] = '-']
-
 
     // Function Definitions for Internal Uses
 
@@ -103,6 +101,9 @@ private:
 
 
 public:
+
+    string str; // only data memeber for strong Big Integer as String. [For signed int, str[0] = '-']
+
     // Constructors for big int.
     bigint() {
         str = '0';  //default value
