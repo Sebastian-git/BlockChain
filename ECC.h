@@ -21,8 +21,8 @@ public:
 
 	void addECC(bigint pX, bigint pY, bigint qX, bigint qY, bigint& x, bigint& y); // Addition invented for elliptic curves, adding 2 points
 	void doubleECC(bigint pX, bigint pY, bigint& x, bigint& y); // FIGURE OUT WHAT THIS DOES
-	int multECC(bigint gX, bigint gY, bigint scalar, bigint& x, bigint& y); // Multiplication for elliptic curves, double and add
-	int modECC(bigint randNum, bigint N); // Extended Euclidean Algorithm, "division" for elliptic curves
+	void multECC(bigint xS, bigint yS, bigint scalar, bigint& x, bigint& y); // Multiplication for elliptic curves, double and add
+	bigint modECC(bigint a, bigint n); // Extended Euclidean Algorithm, "division" for elliptic curves
 
 	void toBase2(bigint base10, bigint& base2); // Convert bigint base 10 to bigint base 2 for multECC
 
