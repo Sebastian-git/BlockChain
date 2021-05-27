@@ -34,6 +34,6 @@ void TransactionHandler::saveUserInfo(std::vector<std::string> data) {
 }
 
 void TransactionHandler::addBlock(std::vector<std::string> data) {
-    ECC ecc;
+   
     
 }

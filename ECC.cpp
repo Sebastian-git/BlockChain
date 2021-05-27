@@ -3,6 +3,7 @@
 #include <cmath>
 #include <bitset>
 
+#include "BigFloat.h"
 
 ECC::ECC() :
 	curve(big_pow(2, 256) - big_pow(2, 32) - big_pow(2, 9) - big_pow(2, 8) - big_pow(2, 7) - big_pow(2, 6) - big_pow(2, 4) - bigint(1)), 
@@ -17,13 +18,21 @@ ECC::ECC() :
 	hashedData("86032112319101611046176971828093669637772856272773459297323797145286374828050")
 {
 
+	bigint x("108165236279178312660610114131826512483935470542850824183737259708197206310322");
+	bigint y("108165236279178312660610114131826512483935470542850824183737259708197206310");
+
+	std::cout << "x / y = " << x / y << "\n";
+
+	/*
 	bigint x;
 	bigint y;
 	multECC(gX, gY, privKey, x, y);
 
+
 	std::cout << "Private key: \n" << privKey << "\n\n";
 	std::cout << "Public keys uncompressed: \n";
 	std::cout << "X: \n" << x << "\nY:\n" << y << "\n\n";
+	*/
 
 	/*
 
@@ -81,10 +90,12 @@ bigint ECC::modECC(bigint a, bigint n) {
 	
 	bigint q;
 
+	std::cout << m / a << "\n";
+
 	while (a > bigint(1)) {
-		std::cout << "M: " << m << "\n";
-		std::cout << "A: " << a << "\n\n";
 		q = m / a; // m / a becomes 0, creates error
+		//https://en.wikipedia.org/wiki/Division_algorithm#Newton%E2%80%93Raphson_division
+		//http://burtleburtle.net/bob/math/bigfloat.html
 
 		y = prevY - q * y;
 		prevY = y;
