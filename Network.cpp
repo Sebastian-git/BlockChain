@@ -3,24 +3,31 @@
 
 Network::Network() : socket(), ip(), buffer(), received(), keepConnection(true) {
     ip = sf::IpAddress::getLocalAddress();
-
 }
 
 void Network::connect(char mode) {
-    std::cout << "Called connect\n";
     if (mode == 'S' || mode == 's') { // If current user is server
+
+        listener.setBlocking(false);
         listener.listen(2008);
+
         while (keepConnection) {
             
             if (listener.accept(socket) == sf::Socket::Done) {
                 std::cout << "New client connected, IP:" << socket.getRemoteAddress() << "\n";
                 socket.receive(buffer, sizeof(buffer), received);
+                received = 0;
                 std::cout << buffer << "\n";
-                memset(buffer, 0, sizeof(buffer));
             }
-            socket.receive(buffer, sizeof(buffer), received);
 
-            std::cout << "Buffer: " << buffer << "\n";
+            socket.receive(buffer, sizeof(buffer), received);
+            if (buffer != "") {
+                std::cout << "|" << buffer << "|\n";
+            }
+            else {
+                std::cout << "B: " << buffer << "\n";
+            }
+
             /*
             * for buffer/data communication issue, visit
             https://stackoverflow.com/questions/53448141/sfml-detect-multiple-connections-to-server-and-count-them

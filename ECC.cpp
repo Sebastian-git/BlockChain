@@ -3,10 +3,8 @@
 #include <cmath>
 #include <bitset>
 
-#include "BigFloat.h"
-
 ECC::ECC() :
-	curve(big_pow(2, 256) - big_pow(2, 32) - big_pow(2, 9) - big_pow(2, 8) - big_pow(2, 7) - big_pow(2, 6) - big_pow(2, 4) - bigint(1)), 
+	curve(big_pow(2, 256) - big_pow(2, 32) - big_pow(2, 9) - big_pow(2, 8) - big_pow(2, 7) - big_pow(2, 6) - big_pow(2, 4) - bigint(1)),
 	aCurve(0), 
 	bCurve(7),
 	N("115792089237316195423570985008687907852837564279074904382605163141518161494337"),
@@ -17,24 +15,13 @@ ECC::ECC() :
 	randNum("28695618543805844332113829720373285210420739438570883203839696518176414791234"),
 	hashedData("86032112319101611046176971828093669637772856272773459297323797145286374828050")
 {
-
-	bigint x("108165236279178312660610114131826512483935470542850824183737259708197206310322");
-	bigint y("108165236279178312660610114131826512483935470542850824183737259708197206310");
-
-	std::cout << "x / y = " << x / y << "\n";
-
-	/*
 	bigint x;
 	bigint y;
 	multECC(gX, gY, privKey, x, y);
 
-
 	std::cout << "Private key: \n" << privKey << "\n\n";
 	std::cout << "Public keys uncompressed: \n";
 	std::cout << "X: \n" << x << "\nY:\n" << y << "\n\n";
-	*/
-
-	/*
 
 	bigint xSig;
 	bigint ySig;
@@ -74,26 +61,27 @@ ECC::ECC() :
 	std::cout << "Signature : " << sigX << "\n" << sigY << "\n";
 
 	std::cout << (r == x) << "\n";
-	*/
+	
 }
 
-bigint ECC::modECC(bigint a, bigint n) {
+bigint ECC::modECC(bigint a, bigint m) {
+
+	m = curve;
 
 	if (a < bigint(0)) {
+		std::cout << "A < 0\n";
 		a = a % curve;
 	}
-
-	bigint m = curve;
 	
 	bigint prevY = 0;
 	bigint y = 1;
 	
 	bigint q;
 
-	std::cout << m / a << "\n";
-
 	while (a > bigint(1)) {
-		q = m / a; // m / a becomes 0, creates error
+		q = m / a; 
+		
+		// m / a becomes 0, creates error
 		//https://en.wikipedia.org/wiki/Division_algorithm#Newton%E2%80%93Raphson_division
 		//http://burtleburtle.net/bob/math/bigfloat.html
 
@@ -151,9 +139,10 @@ void ECC::addECC(bigint pX, bigint pY, bigint qX, bigint qY, bigint& x, bigint& 
 }
 
 void ECC::doubleECC(bigint pX, bigint pY, bigint& x, bigint& y) {
-	bigint lambdaNumerator = 3 * big_pow(pX, 2);
+	bigint num = 2;
+	bigint lambdaNumerator = 3 * big_pow(pX, num);
 	bigint lambdaDenominator = (2 * pY);
-	bigint lambda = (lambdaNumerator * modECC(lambdaDenominator, curve)) % curve; // Currently evaluating to 0, why?
+	bigint lambda = (lambdaNumerator * modECC(lambdaDenominator, curve)) % curve;
 	x = ((lambda * lambda) - (2 * pX)) % curve;
 	y = (lambda * (pX - x) - pY) % curve;
 }

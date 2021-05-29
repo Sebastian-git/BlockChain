@@ -32,8 +32,8 @@ bool bigint::is_bigint(string s) {                              // Checks if the
 */
 
 string bigint::add(string str1, string str2) {          // returns arithmetic addition of str1+str2
-    int str1_len = str1.length();
-    int str2_len = str2.length();
+    int str1_len = (int)str1.length();
+    int str2_len = (int)str2.length();
     string sum = "";
 
     if (str1_len == 0 && str2_len == 0) {
@@ -98,8 +98,8 @@ string bigint::add(string str1, string str2) {          // returns arithmetic ad
 */
 
 string bigint::subtract(string str1, string str2) {                 // returns arithmetic subtraction of str1-str2
-    int str1_len = str1.length();
-    int str2_len = str2.length();
+    int str1_len = (int)str1.length();
+    int str2_len = (int)str2.length();
     string sum = "";
     if (str1 == str2) {
         return "0";
@@ -196,8 +196,8 @@ string bigint::subtract(string str1, string str2) {                 // returns a
 
 string bigint::multiply(string str1, string str2) {             // return arithmetic multiplication of str1*str2
     bool toAddNeg = false;
-    int str1_len = str1.length();
-    int str2_len = str2.length();
+    int str1_len = (int)str1.length();
+    int str2_len = (int)str2.length();
     string ans = "";
     if (str1[0] == '-' && str2[0] == '-') {
         ans = multiply(str1.erase(0, 1), str2.erase(0, 1));
@@ -231,7 +231,7 @@ string bigint::multiply(string str1, string str2) {             // return arithm
                 result[i_n1 + i_n2] += carry;
             i_n1++;
         }
-        int i = result.size() - 1;
+        int i = (int)result.size() - 1;
         while (i >= 0 && result[i] == 0)
             i--;
         if (i == -1)
@@ -295,36 +295,35 @@ string bigint::divide(string str1, string str2) {                   // return ar
     else {
         if (str2 == "1")
             return str1;
-        if (str2 == maximum(str1, str2))
+        if (is_strictlyMaximum(str2, str1)) {
             return "0";
-        stringstream strstrm(str2);
-        unsigned long long int int_str2 = 0;
-        strstrm >> int_str2;
-        if (int_str2 <= std::numeric_limits<unsigned long long>::max()) {
+        }
+        if (str2.length() <= 19) {
+            stringstream strstrm(str2);
+            unsigned long long int int_str2 = 0;
+            strstrm >> int_str2;
             ans = shortDivide(str1, int_str2);
         }
         else {
             string temp = str2;
             ans = "0";
-            string count = "1";
-            long long int len_diff = (long long int) str1.length() - str2.length();
-            len_diff--;
-            int lim = 1;
-            if (str1[0] == '1' && str1[1] == '0')
-                lim = 2;
-            while (len_diff > lim) {
-                count = add(count, pow("10", to_string(len_diff)));
-                temp = add(multiply(str2, pow("10", to_string(len_diff))), temp);
-                len_diff--;
+            string count = "0";
+            while (str1 == maximum(str1, str2)) {
+                int lenDiff = (int)(str1.length() - str2.length());
+                if (lenDiff > 0 && str1[0] > str2[0]) {
+                    count = add(count, pow("10", to_string(lenDiff)));
+                    str1 = subtract(str1, multiply(str2, pow("10", to_string(lenDiff))));
+                }
+                else if (lenDiff > 0) {
+                    count = add(count, pow("10", to_string(lenDiff - 1)));
+                    str1 = subtract(str1, multiply(str2, pow("10", to_string(lenDiff - 1))));
+                }
+                else {
+                    count = add(count, "1");
+                    str1 = subtract(str1, str2);
+                }
             }
-            while (str1 == maximum(temp, str1) && temp != str1) {
-                temp = add(temp, str2);
-                count = add(count, "1");
-            }
-            if (temp == str1)
-                ans = count;
-            else
-                ans = subtract(count, "1");
+            ans = count;
         }
     }
     return ans;
@@ -375,7 +374,7 @@ string bigint::maximum(string str1, string str2) {              // return maximu
     else if (str2[0] == '-') {
         return trim(str1);
     }
-    int str1_len = str1.length(), str2_len = str2.length();
+    int str1_len = (int)str1.length(), str2_len = (int)str2.length();
     if (str1_len == str2_len) {
         for (int i = 0; i < str1_len; ++i) {
             if (str1[i] != str2[i]) {

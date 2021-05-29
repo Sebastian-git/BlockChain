@@ -27,6 +27,7 @@
     SOFTWARE.
 */
 
+
 #pragma once
 
 #include <string>
@@ -61,6 +62,7 @@ using namespace std;
 // Big Integer Class
 
 class bigint {
+
 private:
 
     // Function Definitions for Internal Uses
@@ -101,7 +103,6 @@ private:
 
 
 public:
-
     string str; // only data memeber for strong Big Integer as String. [For signed int, str[0] = '-']
 
     // Constructors for big int.
