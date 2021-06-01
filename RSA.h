@@ -13,12 +13,15 @@ public:
 		std::string privateKey;
 	} keys;
 
+	bool keysExist();
+
 	void generateKeys(); // Generates new public and private keys
 
-	int gcd(int a, int b); // Returns greatest common divisor
-
+	void displayKeys();
 
 private:
+
+	int gcd(int a, int b); // Returns greatest common divisor
 
 };
 

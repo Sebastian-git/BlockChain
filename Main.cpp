@@ -3,8 +3,6 @@
 #include <iostream>
 #include <string>
 
-#include "Block.h"
-
 
 int main() {
     /*
@@ -47,5 +45,6 @@ int main() {
     if (controller.startConnection()) {
         controller.startGUI();
     }
+
     return 0;
 }

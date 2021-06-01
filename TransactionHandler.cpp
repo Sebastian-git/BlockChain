@@ -3,17 +3,16 @@
 
 TransactionHandler::TransactionHandler() : data(), save() {}
 
-void TransactionHandler::handle(std::vector<std::string> data) {
+void TransactionHandler::handle(std::vector<std::string> data, RSA& rsa) {
     this->data = data;
     save.saveUserInfo(data);
-    generateBlock();
+    generateBlock(rsa);
     shareTransaction();
 }
 
-void TransactionHandler::generateBlock() {
+void TransactionHandler::generateBlock(RSA& rsa) {
     Block block = Block();
-    block.generateBlock(data);
-    block.displayBlockContent();
+    block.generateBlock(data, rsa);
     save.saveBlock(block);
 }
 

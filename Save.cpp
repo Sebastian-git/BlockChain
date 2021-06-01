@@ -1,6 +1,5 @@
 #include "Save.h"
 #include "sha256.h"
-#include "RSA.h"
 #include <fstream>
 
 Save::Save() {}
@@ -8,14 +7,13 @@ Save::Save() {}
 void Save::saveUserInfo(std::vector<std::string> data) {
 
     SHA256 sha256;
-    RSA rsa;
 
     // Ensure no duplicate accounts
-    std::ifstream ifs("accounts.txt");
+    std::ifstream file("accounts.txt");
     std::string line;
-    while (std::getline(ifs, line)) {
+    while (std::getline(file, line)) {
         if (line == sha256(data[0])) {
-            ifs.close();
+            file.close();
             return;
         }
     }
@@ -27,13 +25,8 @@ void Save::saveUserInfo(std::vector<std::string> data) {
         if (i == 0) {
             out << sha256(data[i]) << "\n";
         }
-        else if (i == 1) {
-            rsa.generateKeys();
-            out << rsa.keys.publicKeyExponent << "\n" << rsa.keys.publicKeyModulus << "\n";
-            out << sha256(data[i]) << "\n";
-        }
     }
-    out << "----------------------------------------------------- \n";
+    out << "------------------------------------------------------------- \n";
     out.close();
 
 }

@@ -1,14 +1,13 @@
 #include "Block.h"
-#include "RSA.h"
 #include <boost/multiprecision/cpp_int.hpp>
 #include <fstream>
 #include <ctime>
 
 #pragma warning(disable : 4996) // To use localtime
 
-Block::Block() : sha(), UID(), headerInfo(), transferInfo() {}
+Block::Block() : sha(), headerInfo(), transferInfo() {}
 
-void Block::generateBlock(std::vector<std::string> data) {
+void Block::generateBlock(std::vector<std::string> data, RSA& rsa) {
 
     time_t rawtime;
     struct tm* timeinfo;
@@ -26,39 +25,21 @@ void Block::generateBlock(std::vector<std::string> data) {
 	transferInfo.recipientID = sha(data[2]);
 	transferInfo.quantity = data[3];
 	
-    generateSignature();
+    addSignature(rsa);
+    addRecipientPublicKey();
 
 }
 
-void Block::generateSignature() {
+void Block::addSignature(RSA& rsa) {
 
-    int p = 1, q = 1, n = 1, phi_n = 1, e = 1, d = 1;
+    transferInfo.senderPublicKeyExponent = rsa.keys.publicKeyExponent;
+    transferInfo.senderPublicKeyModulus = rsa.keys.publicKeyModulus;
 
-    std::vector<std::string> keys = getKeys();
+    int privateKey = std::stoi(rsa.keys.privateKey);
+    int ePublicKey = std::stoi(rsa.keys.publicKeyExponent);
+    int mPublicKey = std::stoi(rsa.keys.publicKeyModulus);
 
-    // Check if private and public keys already exist, and if they do, update them locally
-
-    if (keys.size() == 0) { // Since no keys exist, generate and save new public and private keys
-
-        RSA rsa;
-        rsa.generateKeys();
-
-        std::ofstream out;
-        out.open("keys.txt", std::ios_base::app);
-        out << rsa.keys.privateKey << "\n" << rsa.keys.publicKeyExponent << "\n" << rsa.keys.publicKeyModulus << "\n";
-        out.close();
-
-    }
-    else {
-        d = std::stoi(keys[0]);
-        e = std::stoi(keys[1]);
-        n = std::stoi(keys[2]);
-    }
-
-    transferInfo.senderPublicKeyExponent = std::to_string(e);
-    transferInfo.senderPublicKeyModulus = std::to_string(n);
-
-    /* 
+    /*
     RSA Signature Algorithms:
 
     Generation:     signature = (message^privateKey) % n
@@ -66,16 +47,16 @@ void Block::generateSignature() {
     Verification:     message = (signature^publicKey) % n
     */
 
-    std::string msg = sha(transferInfo.senderPublicKeyExponent + transferInfo.recipientPublicKeyExponent);
+    // RSA signature of transaction is based off the exponent public keys of both parties, and the quantity transferred in the transaction
 
-    std::cout << "Hashed message: " << msg << "\n";
+    std::string UID = sha(transferInfo.senderPublicKeyExponent + transferInfo.recipientPublicKeyExponent + transferInfo.quantity);
 
     std::vector<boost::multiprecision::int1024_t> signature; // Vector containing individually encrypted characters that make up signature
 
     boost::multiprecision::int1024_t cur; // Current character being encrypted
 
-    for (int i = 0; i < msg.size(); ++i) {
-        cur = boost::multiprecision::powm((int)msg[i], d, n);
+    for (int i = 0; i < UID.size(); ++i) {
+        cur = boost::multiprecision::powm((int)UID[i], privateKey, mPublicKey);
         signature.push_back(cur);
     }
 
@@ -83,37 +64,10 @@ void Block::generateSignature() {
         transferInfo.signature += (signature[i]).str();
     }
 
-    std::string ogMsg = ""; // Original message, decrypted
-    for (int i = 0; i < signature.size(); i++) {
-        ogMsg += (char)boost::multiprecision::powm(signature[i], e, n);
-    }
-    std::cout << "Original message, decrypted: " << ogMsg << "\n";
-
-    getRecipientPublicKey();
+    headerInfo.UID = UID;
 }
 
-int Block::gcd(int a, int b) {
-    if (b == 0)
-        return a;
-    return gcd(b, a % b);
-}
-
-std::vector<std::string> Block::getKeys() {
-
-    std::vector<std::string> keys;
-
-    // Check for previously stored private keys
-    std::ifstream file("keys.txt");
-    std::string line;
-    while (std::getline(file, line)) {
-        keys.push_back(line);
-    }
-    file.close();
-    return keys;
-
-}
-
-void Block::getRecipientPublicKey() {
+void Block::addRecipientPublicKey() {
 
     // Check for previously stored private keys
     std::ifstream file("accounts.txt");
@@ -136,10 +90,20 @@ void Block::getRecipientPublicKey() {
     file.close();
 }
 
+void Block::addPrevID() {
+
+}
+
+void Block::addMerkleRoot() {
+    /*
+    Merkle root will be unique hash based off previous blocks
+    */
+}
+
 void Block::displayBlockContent() {
 
-    std::cout << "UID: " << UID << "\n";
     std::cout << "-----------------------HEADER------------------------\n";
+    std::cout << "UID: " << headerInfo.UID << "\n";
     std::cout << "prevID: " << headerInfo.prevID << "\n";
     std::cout << "merckleRoot: " << headerInfo.merkleRoot << "\n";
     std::cout << "date: " << headerInfo.date << "\n";
@@ -154,4 +118,10 @@ void Block::displayBlockContent() {
     std::cout << "quantity: " << transferInfo.quantity << "\n";
     std::cout << "-----------------------------------------------------\n";
 
+}
+
+int Block::gcd(int a, int b) {
+    if (b == 0)
+        return a;
+    return gcd(b, a % b);
 }

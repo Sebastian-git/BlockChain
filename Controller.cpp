@@ -1,9 +1,11 @@
 #include "Controller.h"
 #include <iostream>
 
-Controller::Controller() : gui(this), network(), transactionHandler() {}
+Controller::Controller() : gui(this), network(), transactionHandler(), rsa() {}
 
 void Controller::startGUI() {
+	handleKeys();
+
 	gui.display();
 	network.close();
 }
@@ -20,11 +22,16 @@ bool Controller::startConnection() {
 	}
 
 	network.connect(mode);
-
 	return true;
 }
 
 void Controller::handleTransaction(std::vector<std::string> data) {
-	transactionHandler.handle(data);
+	transactionHandler.handle(data, rsa);
 	network.send(data[3]);
+}
+
+void Controller::handleKeys() {
+	if (!rsa.keysExist()) {
+		rsa.generateKeys();
+	}
 }

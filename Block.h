@@ -1,4 +1,5 @@
 #pragma once
+#include "RSA.h"
 #include "sha256.h"
 #include <string>
 #include <vector>
@@ -9,9 +10,8 @@ class Block {
 public:
 	Block();
 
-	std::string UID;
-
 	struct headerInfo {
+		std::string UID;
 		std::string prevID; // Locally calculated. ID of previous block pulled from file
 		std::string merkleRoot; // Locally calculated. Hash of all information inside block
 		std::string date; // Externally calculated. Date of transaction
@@ -28,17 +28,16 @@ public:
 		std::string quantity; // Externally calculated. Quantity transferred
 	} transferInfo;
 
-	void generateBlock(std::vector<std::string> data);
+	void generateBlock(std::vector<std::string> data, RSA& rsa);
 
 	void displayBlockContent(); // Prints all block member variables
 
 private:
 
-	std::vector<std::string> getKeys(); // Returns private and two public keys from keys.txt if they exist
-
-	void generateSignature(); // Generates unique signature for sender using RSA
-
-	void getRecipientPublicKey();
+	void addSignature(RSA& rsa); // Generates unique signature for sender using RSA
+	void addRecipientPublicKey(); // Pulls recipient's public key from accounts.txt to add to block's transfer info
+	void addPrevID(); // Searches for previous block's ID and adds to headerInfo
+	void addMerkleRoot(); // Searches for all previous blocks which influence a new ID, the merkle root
 
 	int gcd(int a, int b); // Returns greatest common divisor, used in RSA
 
