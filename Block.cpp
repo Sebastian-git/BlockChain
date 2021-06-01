@@ -1,9 +1,24 @@
 #include "Block.h"
+#include "RSA.h"
 #include <boost/multiprecision/cpp_int.hpp>
+#include <fstream>
+#include <ctime>
 
-Block::Block() : sha(), senderPassword(), UID() {}
+#pragma warning(disable : 4996) // To use localtime
 
-Block::Block(std::vector<std::string> data, std::string date) : sha(), senderPassword(), UID() {
+Block::Block() : sha(), UID(), headerInfo(), transferInfo() {}
+
+Block::Block(std::vector<std::string> data) : sha(), UID(), headerInfo(), transferInfo() {
+
+    time_t rawtime;
+    struct tm* timeinfo;
+    char buffer[80];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
+    std::string date(buffer);
 	
 	SHA256 sha;
 	
@@ -15,7 +30,17 @@ Block::Block(std::vector<std::string> data, std::string date) : sha(), senderPas
 	
 }
 
-void Block::generateBlock(std::vector<std::string> data, std::string date) {
+void Block::generateBlock(std::vector<std::string> data) {
+
+    time_t rawtime;
+    struct tm* timeinfo;
+    char buffer[80];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
+    std::string date(buffer);
 
 	headerInfo.date = date;
 
@@ -29,30 +54,31 @@ void Block::generateBlock(std::vector<std::string> data, std::string date) {
 
 void Block::generateSignature() {
 
-    int publicKey;
+    int p = 1, q = 1, n = 1, phi_n = 1, e = 1, d = 1;
 
-    int privateKey;
+    std::vector<std::string> keys = getKeys();
 
-    // if getPublic/PrivateKey == "", generatePublic/PrivateKey, else, set = return value
+    // Check if private and public keys already exist, and if they do, update them locally
 
-    int p = 89; // Random big prime number P
-    int q = 97; // Random big prime number Q
-    int n = p * q; // Public key n is the product of the two large prime numbers
-    int phi_n = (p - 1) * (q - 1); // phi_n helps generate second public key, e, and the private key, d
+    if (keys.size() == 0) { // Since no keys exist, generate and save new public and private keys
 
-    unsigned int i = 2;
-    while (gcd(i, phi_n) != 1) {
-        i++;
+        RSA rsa;
+        rsa.generateKeys();
+
+        std::ofstream out;
+        out.open("keys.txt", std::ios_base::app);
+        out << rsa.keys.privateKey << "\n" << rsa.keys.publicKeyExponent << "\n" << rsa.keys.publicKeyModulus << "\n";
+        out.close();
+
+    }
+    else {
+        d = std::stoi(keys[0]);
+        e = std::stoi(keys[1]);
+        n = std::stoi(keys[2]);
     }
 
-    int e = i; // e is a value between 1 and phi_n - 1, and doesn't share any common factors with phi_n
-
-    unsigned int k = 1;
-    while ((k * phi_n + 1) % e != 0) {
-        k++;
-    }
-
-    int d = (k * phi_n + 1) / e; // d is calculated such that (e * d) ^ phi_n = 1
+    transferInfo.senderPublicKeyExponent = std::to_string(e);
+    transferInfo.senderPublicKeyModulus = std::to_string(n);
 
     /* 
     RSA Signature Algorithms:
@@ -62,7 +88,7 @@ void Block::generateSignature() {
     Verification:     message = (signature^publicKey) % n
     */
 
-    std::string msg = sha(transferInfo.senderPublicKey + transferInfo.recipientPublicKey);
+    std::string msg = sha(transferInfo.senderPublicKeyExponent + transferInfo.recipientPublicKeyExponent);
 
     std::cout << "Hashed message: " << msg << "\n";
 
@@ -75,21 +101,79 @@ void Block::generateSignature() {
         signature.push_back(cur);
     }
 
-    std::cout << "\n\n Signature:\n";
     for (int i = 0; i < signature.size(); i++) {
-        std::cout << signature[i];
+        transferInfo.signature += (signature[i]).str();
     }
-    std::cout << "\n\n";
 
     std::string ogMsg = ""; // Original message, decrypted
     for (int i = 0; i < signature.size(); i++) {
         ogMsg += (char)boost::multiprecision::powm(signature[i], e, n);
     }
     std::cout << "Original message, decrypted: " << ogMsg << "\n";
+
+    getRecipientPublicKey();
 }
 
 int Block::gcd(int a, int b) {
     if (b == 0)
         return a;
     return gcd(b, a % b);
+}
+
+std::vector<std::string> Block::getKeys() {
+
+    std::vector<std::string> keys;
+
+    // Check for previously stored private keys
+    std::ifstream file("keys.txt");
+    std::string line;
+    while (std::getline(file, line)) {
+        keys.push_back(line);
+    }
+    file.close();
+    return keys;
+
+}
+
+void Block::getRecipientPublicKey() {
+
+    // Check for previously stored private keys
+    std::ifstream file("accounts.txt");
+    std::string line;
+    
+    while (std::getline(file, line)) {
+        if (line == transferInfo.recipientID) {
+            std::getline(file, line);
+            break;
+        }
+    }
+
+    transferInfo.recipientPublicKeyExponent = line;
+    std::getline(file, line);
+    transferInfo.recipientPublicKeyModulus = line;
+
+
+    if (line == "") std::cout << "Recipient does not exist.\n";
+
+    file.close();
+}
+
+void Block::displayBlockContent() {
+
+    std::cout << "UID: " << UID << "\n";
+    std::cout << "-----------------------HEADER------------------------\n";
+    std::cout << "prevID: " << headerInfo.prevID << "\n";
+    std::cout << "merckleRoot: " << headerInfo.merkleRoot << "\n";
+    std::cout << "date: " << headerInfo.date << "\n";
+    std::cout << "-------------------TRANSFER INFO---------------------\n";
+    std::cout << "signature: " << transferInfo.signature << "\n";
+    std::cout << "senderID: " << transferInfo.senderID << "\n";
+    std::cout << "senderPublicKeyExponent: " << transferInfo.senderPublicKeyExponent << "\n";
+    std::cout << "senderPublicKeyModulus: " << transferInfo.senderPublicKeyModulus << "\n";
+    std::cout << "recipientID: " << transferInfo.recipientID << "\n";
+    std::cout << "recipientPublicKeyExponent: " << transferInfo.recipientPublicKeyExponent << "\n";
+    std::cout << "recipientPublicKeyModulus: " << transferInfo.recipientPublicKeyModulus << "\n";
+    std::cout << "quantity: " << transferInfo.quantity << "\n";
+    std::cout << "-----------------------------------------------------\n";
+
 }

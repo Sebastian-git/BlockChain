@@ -1,18 +1,17 @@
 #include "TransactionHandler.h"
 #include "Block.h"
 #include "sha256.h"
+#include "RSA.h"
 
 #include <iostream>
 #include <fstream>
-#include <ctime>
-
-#pragma warning(disable : 4996) // To use localtime
 
 TransactionHandler::TransactionHandler() {}
 
 void TransactionHandler::saveUserInfo(std::vector<std::string> data) {
 
     SHA256 sha256;
+    RSA rsa;
 
     // Ensure no duplicate accounts
     std::ifstream ifs("accounts.txt");
@@ -32,6 +31,8 @@ void TransactionHandler::saveUserInfo(std::vector<std::string> data) {
             out << sha256(data[i]) << "\n";
         }
         else if (i == 1) {
+            rsa.generateKeys();
+            out << rsa.keys.publicKeyExponent << "\n" << rsa.keys.publicKeyModulus << "\n";
             out << sha256(data[i]) << "\n";
         }
     }
@@ -41,25 +42,11 @@ void TransactionHandler::saveUserInfo(std::vector<std::string> data) {
 }
 
 void TransactionHandler::shareTransaction(std::vector<std::string> data) {
-
-    time_t rawtime;
-    struct tm* timeinfo;
-    char buffer[80];
-
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-
-    strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
-    std::string date(buffer);
-
-
-    Block block = Block();
-    block.generateBlock(data, date);
-
-
+    // Spread transaction block to everyone else in network
 }
 
 void TransactionHandler::addBlock(std::vector<std::string> data) {
-   
-
+    Block block = Block();
+    block.generateBlock(data);
+    block.displayBlockContent();
 }

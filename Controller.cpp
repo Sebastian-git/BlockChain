@@ -1,7 +1,7 @@
 #include "Controller.h"
 #include <iostream>
 
-Controller::Controller() : gui(this), network(), transactionHandler() {};
+Controller::Controller() : gui(this), network(), transactionHandler() {}
 
 void Controller::startGUI() {
 	gui.display();
@@ -26,6 +26,7 @@ bool Controller::startConnection() {
 
 void Controller::handleTransaction(std::vector<std::string> data) {
 	transactionHandler.shareTransaction(data);
-	//transactionHandler.addBlock(data);
+	transactionHandler.saveUserInfo(data);
+	transactionHandler.addBlock(data);
 	network.send(data[3]);
 }

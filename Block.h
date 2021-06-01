@@ -8,7 +8,7 @@ class Block {
 
 public:
 	Block();
-	Block(std::vector<std::string> data, std::string date);
+	Block(std::vector<std::string> data);
 
 	std::string UID;
 
@@ -21,27 +21,27 @@ public:
 	struct transferInfo {
 		std::string signature; // Locally calculated. Sender's unique signature calculated with RSA
 		std::string senderID; // Externally calculated. Sender's unique ID, hashed value of username
-		std::string senderPublicKey; // Locally calculated. Sender's public key corresponding to their username
+		std::string senderPublicKeyExponent; // Locally calculated. Sender's public key corresponding to their username
+		std::string senderPublicKeyModulus; // Locally calculated. Sender's public key corresponding to their username
 		std::string recipientID; // Externally calculated. Recipient's unique ID, hashed value of username
-		std::string recipientPublicKey; // Locally calculated. Recipient's public key corresponding to their username
+		std::string recipientPublicKeyExponent; // Locally calculated. Recipient's public key corresponding to their username
+		std::string recipientPublicKeyModulus; // Locally calculated. Recipient's public key corresponding to their username
 		std::string quantity; // Externally calculated. Quantity transferred
 	} transferInfo;
 
-	void generateBlock(std::vector<std::string> data, std::string date);
+	void generateBlock(std::vector<std::string> data);
+
+	void displayBlockContent(); // Prints all block member variables
 
 private:
 
-	std::string getPrivateKey();
-	void generatePrivateKey();
-
-	std::string getPublicKey();
-	void generatePublicKey();
+	std::vector<std::string> getKeys(); // Returns private and two public keys from keys.txt if they exist
 
 	void generateSignature(); // Generates unique signature for sender using RSA
 
-	int gcd(int a, int b); // Returns greatest common divisor, used in RSA
+	void getRecipientPublicKey();
 
-	std::string senderPassword; // Used to help generate signature with RSA
+	int gcd(int a, int b); // Returns greatest common divisor, used in RSA
 
 	SHA256 sha; // Used to encrypt with SHA256
 	

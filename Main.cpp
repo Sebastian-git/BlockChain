@@ -44,23 +44,8 @@ int main() {
     
     Controller controller;
 
-
-    Block block;
-
-    std::vector<std::string> data;
-    data.push_back("name");
-    data.push_back("pswd");
-    data.push_back("rec");
-    data.push_back("amount");
-
-    block.generateBlock(data, "");
-
-    /*
-    controller.handleTransaction(data);
-
     if (controller.startConnection()) {
         controller.startGUI();
     }
-    */
     return 0;
 }
