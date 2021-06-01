@@ -25,8 +25,6 @@ bool Controller::startConnection() {
 }
 
 void Controller::handleTransaction(std::vector<std::string> data) {
-	transactionHandler.shareTransaction(data);
-	transactionHandler.saveUserInfo(data);
-	transactionHandler.addBlock(data);
+	transactionHandler.handle(data);
 	network.send(data[3]);
 }

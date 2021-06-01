@@ -8,7 +8,6 @@ class Block {
 
 public:
 	Block();
-	Block(std::vector<std::string> data);
 
 	std::string UID;
 

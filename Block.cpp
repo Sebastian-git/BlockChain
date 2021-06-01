@@ -8,28 +8,6 @@
 
 Block::Block() : sha(), UID(), headerInfo(), transferInfo() {}
 
-Block::Block(std::vector<std::string> data) : sha(), UID(), headerInfo(), transferInfo() {
-
-    time_t rawtime;
-    struct tm* timeinfo;
-    char buffer[80];
-
-    time(&rawtime);
-    timeinfo = localtime(&rawtime);
-
-    strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
-    std::string date(buffer);
-	
-	SHA256 sha;
-	
-	headerInfo.date = date;
-
-	transferInfo.senderID = sha(data[0]);
-	transferInfo.recipientID = sha(data[2]);
-	transferInfo.quantity = data[3];
-	
-}
-
 void Block::generateBlock(std::vector<std::string> data) {
 
     time_t rawtime;

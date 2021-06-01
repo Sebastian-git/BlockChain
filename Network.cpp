@@ -86,19 +86,20 @@ void Network::saveClientList() {
 
     socket.receive(buffer, sizeof(buffer), received);
 
-    std::cout << "Current client list:\n";
-
-    std::ifstream ifs("clients.txt");
+    // Ensure no duplicate saved clients
+    std::ifstream file("clients.txt");
     std::string line;
-    while (std::getline(ifs, line)) {
-        std::cout << line << "\n";
+    while (std::getline(file, line)) {
+        if (line == buffer) {
+            file.close();
+            return;
+        }
     }
+    file.close();
 
-    std::cout << "Updated client list:\n" << buffer << "\n";
-
+    // If client's IP hasn't been saved, save
     std::ofstream out;
     out.open("clients.txt", std::ios_base::app);
     out << buffer << "\n";
     out.close();
-
 }
