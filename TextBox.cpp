@@ -3,9 +3,11 @@
 #include <iostream>
 
 TextBox::TextBox(GUI* gui) : gui(gui), pos(), box(), boxSize(), boxColor(), thickness(3), text(), textColor(), textSize(40), textMargin(10), doBlink(false), seeCursor(false), cooldown(250), prevTime(0) {
+	
+	setPos(sf::Vector2f(0, 0));
+
 	setBoxThickness(3);
 	setBoxSize(sf::Vector2f(200, 200));
-	setPos(sf::Vector2f(0, 0));
 	setBoxColor(sf::Color::White);
 	box.setFillColor(sf::Color::Transparent);
 

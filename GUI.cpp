@@ -2,7 +2,7 @@
 #include "Controller.h"
 #include <iostream>
 
-GUI::GUI(Controller* controller) : windowSize(sf::Vector2f(1200, 800)), margin(20), usernameLabel(), usernameTextbox(this), passwordLabel(), passwordTextbox(this), recipientLabel(), recipientTextbox(this), quantityLabel(), quantityTextbox(this), dollarLabel(), controller(controller) {}
+GUI::GUI(Controller* controller) : windowSize(sf::Vector2f(1200, 800)), margin(20), usernameLabel(), usernameTextbox(this), passwordLabel(), passwordTextbox(this), recipientLabel(), recipientTextbox(this), quantityLabel(), quantityTextbox(this), dollarLabel(), controller(controller), submitButton(this) {}
 
 void GUI::handleTransaction() {
     data.push_back(usernameTextbox.getText());
@@ -64,6 +64,14 @@ void GUI::display() {
 
 
 
+    // Submit GUI components
+    submitButton.setText("Submit");
+    submitButton.setBoxSize(sf::Vector2f(165, 50));
+    sf::Vector2f prevPos = quantityLabel.getPos();
+    submitButton.setPos(sf::Vector2f( (windowSize.x / 2) - submitButton.getBoxSize().x / 2 , prevPos.y + 150));
+
+
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -74,6 +82,7 @@ void GUI::display() {
             passwordTextbox.addEventHandler(window, event);
             recipientTextbox.addEventHandler(window, event);
             quantityTextbox.addEventHandler(window, event);
+            submitButton.addEventHandler(window, event);
         }
 
         usernameTextbox.update();
@@ -95,6 +104,8 @@ void GUI::display() {
         window.draw(quantityLabel);
         window.draw(quantityTextbox);
         window.draw(dollarLabel);
+
+        window.draw(submitButton);
 
         window.display();
     }

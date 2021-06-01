@@ -15,8 +15,11 @@ ECC::ECC() :
 	randNum("28695618543805844332113829720373285210420739438570883203839696518176414791234"),
 	hashedData("86032112319101611046176971828093669637772856272773459297323797145286374828050")
 {
-	bigint x;
-	bigint y;
+
+	/*
+	bigint x = gX;
+	bigint y = gY;
+	
 	multECC(gX, gY, privKey, x, y);
 
 	std::cout << "Private key: \n" << privKey << "\n\n";
@@ -61,7 +64,8 @@ ECC::ECC() :
 	std::cout << "Signature : " << sigX << "\n" << sigY << "\n";
 
 	std::cout << (r == x) << "\n";
-	
+	*/
+
 }
 
 bigint ECC::modECC(bigint a, bigint m) {
@@ -69,7 +73,6 @@ bigint ECC::modECC(bigint a, bigint m) {
 	m = curve;
 
 	if (a < bigint(0)) {
-		std::cout << "A < 0\n";
 		a = a % curve;
 	}
 	

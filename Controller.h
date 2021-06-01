@@ -11,7 +11,7 @@ public:
 	Controller();
 
 	void startGUI();
-	void startConnection(char mode);
+	bool startConnection();
 
 	void handleTransaction(std::vector<std::string> data);
 

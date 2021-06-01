@@ -1,11 +1,17 @@
 #include "TransactionHandler.h"
-#include "ECC.h"
+#include "Block.h"
+#include "sha256.h"
+
 #include <iostream>
 #include <fstream>
+#include <ctime>
+
+#pragma warning(disable : 4996) // To use localtime
 
 TransactionHandler::TransactionHandler() {}
 
 void TransactionHandler::saveUserInfo(std::vector<std::string> data) {
+
     SHA256 sha256;
 
     // Ensure no duplicate accounts
@@ -31,9 +37,29 @@ void TransactionHandler::saveUserInfo(std::vector<std::string> data) {
     }
     out << "----------------------------------------------------- \n"; 
     out.close();
+
+}
+
+void TransactionHandler::shareTransaction(std::vector<std::string> data) {
+
+    time_t rawtime;
+    struct tm* timeinfo;
+    char buffer[80];
+
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
+    std::string date(buffer);
+
+
+    Block block = Block();
+    block.generateBlock(data, date);
+
+
 }
 
 void TransactionHandler::addBlock(std::vector<std::string> data) {
    
-    
+
 }

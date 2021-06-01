@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "TextBox.h"
 #include "TextLabel.h"
+#include "Button.h"
 #include <vector>
 #include <string>
 
@@ -31,6 +32,8 @@ private:
 	TextLabel quantityLabel;
 	TextBox quantityTextbox;
 	TextLabel dollarLabel;
+
+	Button submitButton;
 
 	std::vector<std::string> data; // Contains all data stored in textboxes
 

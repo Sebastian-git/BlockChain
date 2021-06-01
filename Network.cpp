@@ -1,11 +1,12 @@
 #include "Network.h"
 #include <iostream>
+#include <fstream>
 
-Network::Network() : socket(), ip(), buffer(), received(), keepConnection(true) {
-    ip = sf::IpAddress::getLocalAddress();
-}
+// Update localIP to have .publicIP() to port forward and accept new connections
+Network::Network() : socket(), localIP(sf::IpAddress::getLocalAddress()), clientIP(), buffer(), received(), keepConnection(true) {}
 
 void Network::connect(char mode) {
+
     if (mode == 'S' || mode == 's') { // If current user is server
 
         listener.setBlocking(false);
@@ -14,31 +15,23 @@ void Network::connect(char mode) {
         while (keepConnection) {
             
             if (listener.accept(socket) == sf::Socket::Done) {
-                std::cout << "New client connected, IP:" << socket.getRemoteAddress() << "\n";
-                socket.receive(buffer, sizeof(buffer), received);
-                received = 0;
-                std::cout << buffer << "\n";
+                socket.setBlocking(false);
+                
+                clientIP = (socket.getRemoteAddress()).getPublicAddress();
+                //connectedClientSockets.push_back(socket);
+                addClient(clientIP.toString());
+                shareClientList();
+
+                std::cout << "New client connected, IP: " << clientIP << "\n";
             }
 
-            socket.receive(buffer, sizeof(buffer), received);
-            if (buffer != "") {
-                std::cout << "|" << buffer << "|\n";
-            }
-            else {
-                std::cout << "B: " << buffer << "\n";
-            }
-
-            /*
-            * for buffer/data communication issue, visit
-            https://stackoverflow.com/questions/53448141/sfml-detect-multiple-connections-to-server-and-count-them
-            */
         }
-
     }
     else if (mode == 'C' || mode == 'c') { // If current user is client
-        socket.connect(ip, 2008);
-        std::string msg = "Client confirmation message";
-        socket.send(msg.c_str(), msg.size() + 1);
+        socket.connect(localIP, 2008);
+
+        saveClientList();
+
         std::cout << "Connected to server on " << socket.getRemoteAddress() << "\n";
     }
 }
@@ -51,4 +44,61 @@ void Network::send(std::string data) {
 void Network::close() {
     listener.close();
     keepConnection = false;
+}
+
+void Network::addClient(std::string client) {
+
+    // Ensure no duplicate accounts
+    std::ifstream ifs("clients.txt");
+    std::string line;
+    while (std::getline(ifs, line)) {
+        if (line == client) {
+            ifs.close();
+            return;
+        }
+    }
+
+    // Create new account, store hashed password and username
+    std::ofstream out;
+    out.open("clients.txt", std::ios_base::app);
+    out << client << "\n";   
+    out.close();
+}
+
+void Network::shareClientList() {
+
+    // List of clients saved in server's list of clients
+    std::string clientIPList;
+
+    // Fill clientIPList with IP's from file
+    std::ifstream ifs("clients.txt");
+    std::string line;
+    while (std::getline(ifs, line)) {
+        clientIPList += line;
+    }
+
+    // Send IP's to connected client
+    socket.send(clientIPList.c_str(), clientIPList.length() + 1);
+
+}
+
+void Network::saveClientList() {
+
+    socket.receive(buffer, sizeof(buffer), received);
+
+    std::cout << "Current client list:\n";
+
+    std::ifstream ifs("clients.txt");
+    std::string line;
+    while (std::getline(ifs, line)) {
+        std::cout << line << "\n";
+    }
+
+    std::cout << "Updated client list:\n" << buffer << "\n";
+
+    std::ofstream out;
+    out.open("clients.txt", std::ios_base::app);
+    out << buffer << "\n";
+    out.close();
+
 }

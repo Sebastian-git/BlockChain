@@ -1,4 +1,5 @@
 #include "Controller.h"
+#include <iostream>
 
 Controller::Controller() : gui(this), network(), transactionHandler() {};
 
@@ -7,12 +8,24 @@ void Controller::startGUI() {
 	network.close();
 }
 
-void Controller::startConnection(char mode) {
+bool Controller::startConnection() {
+
+	std::cout << "S for server, C for client: ";
+	char mode;
+	std::cin >> mode;
+
+	if (mode != 'S' && mode != 's' && mode != 'C' && mode != 'c') {
+		std::cout << "Invalid input.\n";
+		return false;
+	}
+
 	network.connect(mode);
+
+	return true;
 }
 
 void Controller::handleTransaction(std::vector<std::string> data) {
-	transactionHandler.saveUserInfo(data);
-	transactionHandler.addBlock(data);
+	transactionHandler.shareTransaction(data);
+	//transactionHandler.addBlock(data);
 	network.send(data[3]);
 }

@@ -3,17 +3,15 @@
 #include <vector>
 #include <string>
 
-///
-///     Called everytime a new transaction happens, will handle:
-///		1 - Hashing password, then storing with corresponding username
-///		2 - Creating new block containing elliptic curve encrypted transaction
-///
 class TransactionHandler {
 
 public:
 	TransactionHandler();
 
-	void saveUserInfo(std::vector<std::string> data);
+	void saveUserInfo(std::vector<std::string> data); // Save user data into shared file
+
+	void shareTransaction(std::vector<std::string> data); // Send transaction data for proof of work
+
 	void addBlock(std::vector<std::string> data);
 
 private:

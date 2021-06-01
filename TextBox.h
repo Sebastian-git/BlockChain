@@ -1,5 +1,6 @@
 #pragma once
 #include "GUIComponent.h"
+#include <string>
 
 class GUI;
 
@@ -50,9 +51,9 @@ private:
 	sf::Text text; // Text user types
 	sf::Font font; // Text font
 	sf::Color textColor; // Text color
-	int textSize; // Font size
-	int textMargin; 
-	bool isTyping;
+	int textSize; // Text size
+	int textMargin; // Margin between text and box
+	bool isTyping; // Enabled when user types while textbox is selected
 
 	sf::Text cursor; // Cursor that blinks when clicked
 	sf::Clock timer; // Timer to tell cursor when to blink
