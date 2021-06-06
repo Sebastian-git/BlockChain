@@ -26,7 +26,7 @@ bool Controller::startConnection() {
 }
 
 void Controller::handleTransaction(std::vector<std::string> data) {
-	transactionHandler.handle(data, rsa);
+	if (transactionHandler.handle(data, rsa))
 	network.send(data[3]);
 }
 

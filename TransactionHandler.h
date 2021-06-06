@@ -15,9 +15,15 @@ public:
 	2 - Create a new block with transaction data
 	3 - Save block locally (adding to chain) and share to server or all connected clients (networking to be determined)
 	*/
-	void handle(std::vector<std::string> data, RSA& rsa); 
+	bool handle(std::vector<std::string> data, RSA& rsa); 
 
 private:
+
+	bool isValidTransaction(std::vector<std::string> data);
+
+	bool accountExists(std::string recipient);
+
+	bool verifyPassword(std::string username, std::string pswd);
 
 	void shareTransaction(); // Send transaction data for proof of work
 
@@ -25,6 +31,7 @@ private:
 
 	std::vector<std::string> data;
 
+	Block block;
 	Save save;
 };
 

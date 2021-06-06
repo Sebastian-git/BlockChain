@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 
-
 int main() {
     /*
     SHA256 sha;
@@ -38,13 +37,15 @@ int main() {
         std::cout << "Attempt " << nonce << ": " << arrow << "\n";
         nonce++;
     }
-    */
     
-    Controller controller;
 
     if (controller.startConnection()) {
         controller.startGUI();
     }
+    */
+
+    Controller controller;
+    controller.startGUI();
 
     return 0;
 }

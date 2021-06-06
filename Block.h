@@ -15,6 +15,7 @@ public:
 		std::string prevID; // Locally calculated. ID of previous block pulled from file
 		std::string merkleRoot; // Locally calculated. Hash of all information inside block
 		std::string date; // Externally calculated. Date of transaction
+		std::string count;
 	} headerInfo;
 
 	struct transferInfo {

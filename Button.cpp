@@ -96,7 +96,15 @@ void Button::addEventHandler(sf::RenderWindow& window, sf::Event event) {
 	// When user clicks
 	if (event.type == sf::Event::MouseButtonPressed) {
 		if (mousePos.x > bounds.left && mousePos.x < bounds.width + bounds.left && mousePos.y > bounds.top && mousePos.y < bounds.height + bounds.top) {
-			gui->handleTransaction();
+			if (text.getString().toAnsiString() == "Submit") {
+				gui->handleTransaction();
+			}
+			else if (text.getString().toAnsiString() == "Toggle") {
+				gui->toggleState();
+			} 
+			else if (text.getString().toAnsiString() == "Start" && !gui->state) {
+				gui->RSAExplanation();
+			}
 		}
 		else {
 		}
