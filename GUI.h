@@ -31,9 +31,13 @@ public:
 
 private:
 
-	std::thread rsaThread;
+	std::thread explanationThread;
+	std::thread rsaThreadP;
+	std::thread rsaThreadQ;
 
-	void RSACalculations();
+	void explanation();
+
+	void randPrime(boost::multiprecision::int1024_t max, boost::multiprecision::int1024_t min, boost::multiprecision::int1024_t randNum, TextLabel* prime, TextLabel* guessCount);
 
 	bool isPrime(boost::multiprecision::int1024_t n, int k);
 
@@ -60,8 +64,14 @@ private:
 	Button toggleButton;
 	Button startButton;
 
+
+	TextLabel rsaExplanation;
+
 	TextLabel primeOne;
 	TextLabel primeTwo;
+
+	TextLabel guessCountOne;
+	TextLabel guessCountTwo;
 
 	std::vector<std::string> data; // Contains all data stored in textboxes
 

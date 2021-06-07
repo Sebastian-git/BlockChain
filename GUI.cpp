@@ -5,10 +5,14 @@
 
 #include <boost/random.hpp>
 
-GUI::GUI(Controller* controller) : windowSize(sf::Vector2f(1200, 800)), margin(20), usernameLabel(), usernameTextbox(this), passwordLabel(), passwordTextbox(this), recipientLabel(), recipientTextbox(this), quantityLabel(), quantityTextbox(this), dollarLabel(), controller(controller), submitButton(this), state(true), toggleButton(this), primeOne(), primeTwo(), startButton(this), rsaThread() {}
+namespace bmp = boost::multiprecision;
+
+GUI::GUI(Controller* controller) : windowSize(sf::Vector2f(1300, 800)), margin(20), usernameLabel(), usernameTextbox(this), passwordLabel(), passwordTextbox(this), recipientLabel(), recipientTextbox(this), quantityLabel(), quantityTextbox(this), dollarLabel(), controller(controller), submitButton(this), state(true), toggleButton(this), rsaExplanation(), primeOne(), primeTwo(), guessCountOne(), guessCountTwo(), startButton(this), rsaThreadP(), rsaThreadQ(), explanationThread() {}
 
 GUI::~GUI() {
-    rsaThread.detach();
+    rsaThreadP.detach();
+    rsaThreadQ.detach();
+    explanationThread.detach();
 }
 
 void GUI::handleTransaction() {
@@ -82,11 +86,24 @@ void GUI::display() {
 
 
 
+    // RSA description of each step GUI component
+    rsaExplanation.setPos(sf::Vector2f(300, windowSize.y / 10));
+
     // RSA random prime 1 (P) GUI component 
-    primeOne.setPos(sf::Vector2f(labelPosX, windowSize.y / 15));
+    primeOne.setPos(sf::Vector2f(20, windowSize.y / 15));
+    primeOne.setTextSize(20);
 
     // RSA random prime 2 (Q) GUI component 
-    primeTwo.setPos(sf::Vector2f(primeOne.getPos().x + 100, primeOne.getPos().y));
+    primeTwo.setPos(sf::Vector2f(windowSize.x - 510, windowSize.y / 15));
+    primeTwo.setTextSize(20);
+
+    // RSA guess count of prime 1 (P)
+    guessCountOne.setPos(sf::Vector2f(20, windowSize.y / 20));
+    guessCountOne.setTextSize(30);
+
+    // RSA guess count of prime 2 (Q)
+    guessCountTwo.setPos(sf::Vector2f(windowSize.x - 510, windowSize.y / 20));
+    guessCountTwo.setTextSize(30);
 
     // Start RSA explanation button GUI component
     startButton.setText("Start");
@@ -135,8 +152,14 @@ void GUI::display() {
             window.draw(submitButton);
         }
         else {
+
+            window.draw(rsaExplanation);
+
             window.draw(primeOne);
             window.draw(primeTwo);
+            
+            window.draw(guessCountOne);
+            window.draw(guessCountTwo);
 
             window.draw(startButton);
 
@@ -150,13 +173,10 @@ void GUI::display() {
 }
 
 void GUI::RSAExplanation() {
-
-    rsaThread = std::thread(&GUI::RSACalculations, this);
-    
+    explanationThread = std::thread(&GUI::explanation, this);
 }
 
-void GUI::RSACalculations() {
-    namespace bmp = boost::multiprecision;
+void GUI::explanation() {
 
     bmp::int1024_t two = 2;
 
@@ -165,8 +185,31 @@ void GUI::RSACalculations() {
 
     bmp::int1024_t randNum;
 
-    int guessNum = 0;
+    sf::Clock clock;
+    int delay = 3;
 
+    // Step 1 explanation
+    rsaExplanation.setText("The first step in RSA is to generate\ntwo random large prime numbers");
+    clock.restart();
+    while (clock.getElapsedTime().asSeconds() != delay) { }
+    rsaExplanation.setText("");
+
+    // Generate random primes
+    rsaThreadP = std::thread(&GUI::randPrime, this, max, min, randNum, &primeOne, &guessCountOne);
+    rsaThreadQ = std::thread(&GUI::randPrime, this, max, min, randNum, &primeTwo, &guessCountTwo);
+
+    // Step 2 explanation
+    rsaExplanation.setText("The second step in RSA is to\ncalculate \"n\" and \"phi_n\"");
+    clock.restart();
+    while (clock.getElapsedTime().asSeconds() != delay) {}
+    rsaExplanation.setText("");
+
+    // Generate n and phi_n
+
+}
+
+void GUI::randPrime(boost::multiprecision::int1024_t max, boost::multiprecision::int1024_t min, boost::multiprecision::int1024_t randNum, TextLabel* prime, TextLabel* guessCount) {
+    int i = 0;
     while (true) {
         randNum = (generator() % (max - min) + min) | 1;
 
@@ -175,21 +218,26 @@ void GUI::RSACalculations() {
         }
 
         if (isPrime(randNum, 5)) {
-            std::cout << randNum << " is prime\n";
-            std::cout << "It only took " << guessNum << " guesses\n";
             break;
         }
-        std::cout << randNum << " is not prime\n\n";
-        ++guessNum;
-        primeOne.setText(randNum.str());
+
+        std::string randNumStr = randNum.str();
+        for (int i = 0; i < randNumStr.size(); i++) {
+            if (i % 45 == 0) {
+                randNumStr.insert(i, "\n");
+            }
+        }
+        ++i;
+        prime->setText(randNumStr);
+        guessCount->setText(std::to_string(i));
     }
 }
 
-bool GUI::millerTest(boost::multiprecision::int1024_t d, boost::multiprecision::int1024_t n) {
+bool GUI::millerTest(bmp::int1024_t d, bmp::int1024_t n) {
 
-    boost::multiprecision::int1024_t a = 2 + rand() % (n - 4);
+    bmp::int1024_t a = 2 + rand() % (n - 4);
 
-    boost::multiprecision::int1024_t x = boost::multiprecision::powm(a, d, n);
+    bmp::int1024_t x = bmp::powm(a, d, n);
 
     if (x == 1 || x == n - 1)
         return true;
@@ -206,12 +254,12 @@ bool GUI::millerTest(boost::multiprecision::int1024_t d, boost::multiprecision::
     return false;
 }
 
-bool GUI::isPrime(boost::multiprecision::int1024_t n, int k) {
+bool GUI::isPrime(bmp::int1024_t n, int k) {
 
     if (n <= 1 || n == 4)  return false;
     if (n <= 3) return true;
 
-    boost::multiprecision::int1024_t d = n - 1;
+    bmp::int1024_t d = n - 1;
     while (d % 2 == 0)
         d /= 2;
 
