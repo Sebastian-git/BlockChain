@@ -34,14 +34,25 @@ private:
 	std::thread explanationThread;
 	std::thread rsaThreadP;
 	std::thread rsaThreadQ;
+	std::thread rsaThreadN;
+	std::thread rsaThreadKeys;
+
+	sf::Clock clock;
+	int delay;
 
 	void explanation();
 
-	void randPrime(boost::multiprecision::int1024_t max, boost::multiprecision::int1024_t min, boost::multiprecision::int1024_t randNum, TextLabel* prime, TextLabel* guessCount);
+	void randPrime(boost::multiprecision::int1024_t max, boost::multiprecision::int1024_t min, boost::multiprecision::int1024_t randNum, TextLabel* prime, TextLabel* guessCount, boost::multiprecision::int1024_t* val);
 
 	bool isPrime(boost::multiprecision::int1024_t n, int k);
 
 	bool millerTest(boost::multiprecision::int1024_t d, boost::multiprecision::int1024_t n);
+
+	void phi_n(boost::multiprecision::int1024_t P, boost::multiprecision::int1024_t Q, boost::multiprecision::int1024_t* phiN);
+
+	void keys(boost::multiprecision::int1024_t phiN, boost::multiprecision::int1024_t* e, boost::multiprecision::int1024_t* d);
+
+	boost::multiprecision::int1024_t gcd(boost::multiprecision::int1024_t a, boost::multiprecision::int1024_t b);
 
 	boost::random::independent_bits_engine<boost::random::mt19937, 1024, boost::multiprecision::int1024_t> generator;
 
@@ -72,6 +83,11 @@ private:
 
 	TextLabel guessCountOne;
 	TextLabel guessCountTwo;
+
+	TextLabel n;
+
+	TextLabel keysLabel;
+	TextLabel keysLabel2;
 
 	std::vector<std::string> data; // Contains all data stored in textboxes
 

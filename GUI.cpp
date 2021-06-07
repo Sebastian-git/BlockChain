@@ -7,12 +7,14 @@
 
 namespace bmp = boost::multiprecision;
 
-GUI::GUI(Controller* controller) : windowSize(sf::Vector2f(1300, 800)), margin(20), usernameLabel(), usernameTextbox(this), passwordLabel(), passwordTextbox(this), recipientLabel(), recipientTextbox(this), quantityLabel(), quantityTextbox(this), dollarLabel(), controller(controller), submitButton(this), state(true), toggleButton(this), rsaExplanation(), primeOne(), primeTwo(), guessCountOne(), guessCountTwo(), startButton(this), rsaThreadP(), rsaThreadQ(), explanationThread() {}
+GUI::GUI(Controller* controller) : windowSize(sf::Vector2f(1300, 800)), margin(20), usernameLabel(), usernameTextbox(this), passwordLabel(), passwordTextbox(this), recipientLabel(), recipientTextbox(this), quantityLabel(), quantityTextbox(this), dollarLabel(), controller(controller), submitButton(this), state(true), toggleButton(this), rsaExplanation(), primeOne(), primeTwo(), guessCountOne(), guessCountTwo(), startButton(this), rsaThreadP(), rsaThreadQ(), explanationThread(), n(), rsaThreadN(), clock(), delay(5), keysLabel(), rsaThreadKeys(), keysLabel2(){}
 
 GUI::~GUI() {
+    explanationThread.detach();
     rsaThreadP.detach();
     rsaThreadQ.detach();
-    explanationThread.detach();
+    rsaThreadN.detach();
+    rsaThreadKeys.detach();
 }
 
 void GUI::handleTransaction() {
@@ -105,6 +107,16 @@ void GUI::display() {
     guessCountTwo.setPos(sf::Vector2f(windowSize.x - 510, windowSize.y / 20));
     guessCountTwo.setTextSize(30);
 
+    // RSA n and phi_n labels
+    n.setPos(sf::Vector2f(50, 50));
+    n.setTextSize(20);
+
+    // RSA key generation explanation
+    keysLabel.setPos(sf::Vector2f(50, 50));
+    keysLabel.setTextSize(30);
+    keysLabel2.setPos(sf::Vector2f(50, 200));
+    keysLabel2.setTextSize(30);
+
     // Start RSA explanation button GUI component
     startButton.setText("Start");
     startButton.setBoxSize(sf::Vector2f(120, 50));
@@ -161,6 +173,11 @@ void GUI::display() {
             window.draw(guessCountOne);
             window.draw(guessCountTwo);
 
+            window.draw(n);
+
+            window.draw(keysLabel);
+            window.draw(keysLabel2);
+
             window.draw(startButton);
 
         }
@@ -183,10 +200,13 @@ void GUI::explanation() {
     bmp::int1024_t max = bmp::pow(two, 1023) - 1;
     bmp::int1024_t min = bmp::pow(two, 1022) + 1;
 
-    bmp::int1024_t randNum;
+    bmp::int1024_t P;
+    bmp::int1024_t Q;
+    bmp::int1024_t phiN;
+    bmp::int1024_t e;
+    bmp::int1024_t d;
 
-    sf::Clock clock;
-    int delay = 3;
+    bmp::int1024_t randNum;
 
     // Step 1 explanation
     rsaExplanation.setText("The first step in RSA is to generate\ntwo random large prime numbers");
@@ -195,8 +215,18 @@ void GUI::explanation() {
     rsaExplanation.setText("");
 
     // Generate random primes
-    rsaThreadP = std::thread(&GUI::randPrime, this, max, min, randNum, &primeOne, &guessCountOne);
-    rsaThreadQ = std::thread(&GUI::randPrime, this, max, min, randNum, &primeTwo, &guessCountTwo);
+    rsaThreadP = std::thread(&GUI::randPrime, this, max, min, randNum, &primeOne, &guessCountOne, &P);
+    rsaThreadQ = std::thread(&GUI::randPrime, this, max, min, randNum, &primeTwo, &guessCountTwo, &Q);
+
+    rsaThreadP.join();
+    rsaThreadQ.join();
+
+    clock.restart();
+    while (clock.getElapsedTime().asSeconds() != delay) {}
+    primeOne.setText("");
+    primeTwo.setText("");
+    guessCountOne.setText("");
+    guessCountTwo.setText("");
 
     // Step 2 explanation
     rsaExplanation.setText("The second step in RSA is to\ncalculate \"n\" and \"phi_n\"");
@@ -205,10 +235,22 @@ void GUI::explanation() {
     rsaExplanation.setText("");
 
     // Generate n and phi_n
+    rsaThreadN = std::thread(&GUI::phi_n, this, P, Q, &phiN);
+    rsaThreadN.join();
 
+    // Step 3 explanation
+    rsaExplanation.setPos(sf::Vector2f(100, windowSize.y / 10));
+    rsaExplanation.setText("");
+    rsaExplanation.setText("The third step is to find public and private keys\n");
+    clock.restart();
+    while (clock.getElapsedTime().asSeconds() != delay) {}
+    rsaExplanation.setText("");
+
+    // Generate keys
+    rsaThreadKeys = std::thread(&GUI::keys, this, phiN, &e, &d);
 }
 
-void GUI::randPrime(boost::multiprecision::int1024_t max, boost::multiprecision::int1024_t min, boost::multiprecision::int1024_t randNum, TextLabel* prime, TextLabel* guessCount) {
+void GUI::randPrime(boost::multiprecision::int1024_t max, boost::multiprecision::int1024_t min, boost::multiprecision::int1024_t randNum, TextLabel* prime, TextLabel* guessCount, bmp::int1024_t* val) {
     int i = 0;
     while (true) {
         randNum = (generator() % (max - min) + min) | 1;
@@ -230,7 +272,9 @@ void GUI::randPrime(boost::multiprecision::int1024_t max, boost::multiprecision:
         ++i;
         prime->setText(randNumStr);
         guessCount->setText(std::to_string(i));
+
     }
+    *val = randNum;
 }
 
 bool GUI::millerTest(bmp::int1024_t d, bmp::int1024_t n) {
@@ -268,4 +312,93 @@ bool GUI::isPrime(bmp::int1024_t n, int k) {
             return false;
 
     return true;
+}
+
+void GUI::phi_n(bmp::int1024_t P, bmp::int1024_t Q, bmp::int1024_t* phiN) {
+
+    std::string PQ = (P * Q).str();
+    for (int i = 0; i < PQ.size(); i++) {
+        if (i % 30 == 0) {
+            PQ.insert(i, "\n");
+        }
+    }
+
+    n.setText("N = P * Q = \n" + PQ);
+    clock.restart();
+    while (clock.getElapsedTime().asSeconds() != delay) { }
+
+    *phiN = (P - 1) * (Q - 1);
+    std::string phi_nStr = (*phiN).str();
+
+    for (int i = 0; i < phi_nStr.size(); i++) {
+        if (i % 60 == 0) {
+            phi_nStr.insert(i, "\n");
+        }
+    }
+
+    n.setPos(sf::Vector2f(100, 200));
+    n.setTextSize(30);
+    n.setText("phi_n is calculated using the simple formula:   phi_n = (p - 1)(q - 1)\n=" + phi_nStr);
+    clock.restart();
+    while (clock.getElapsedTime().asSeconds() != delay) {}
+    n.setText("");
+}
+
+void GUI::keys(bmp::int1024_t phiN, bmp::int1024_t* e, bmp::int1024_t* d) {
+
+    keysLabel.setText("The first key is a value between 1 and phi_n - 1,\nthat also doesn't share any common factors with phi_n.\n");
+    
+    bmp::int1024_t i = 2;//generator() / (2 * rand() % 1000);
+    bmp::int1024_t publicKey;
+
+    while (gcd(i, phiN) != 1) {
+        i++;
+    }
+    
+    publicKey = i;
+    std::string publicKeyStr = publicKey.str();
+    for (int i = 0; i < publicKeyStr.size(); i++) {
+        if (i % 50 == 0) {
+            publicKeyStr.insert(i, "\n");
+        }
+    }
+
+    keysLabel2.setPos(sf::Vector2f(50, 300));
+    keysLabel2.setText("Your public key is now:\n" + publicKeyStr);
+
+    clock.restart();
+    while (clock.getElapsedTime().asSeconds() != delay) {}
+
+    keysLabel2.setText("");
+    keysLabel2.setPos(sf::Vector2f(50, 300));
+    keysLabel.setText("The private key (d) is more difficult to find. \nIt is calculated such that (e * d)^phi_n = 1, or the formula\nd = (k * phi_n + 1) / e\nWhere k is a number that starts from one and increases\nuntil the right value is found.\n");
+
+    clock.restart();
+    while (clock.getElapsedTime().asSeconds() != delay) {}
+
+    bmp::int1024_t k = 1;
+    bmp::int1024_t privateKey;
+
+    while ((k * phiN + 1) % publicKey != 0) {
+        k++;
+    }
+
+    privateKey = (k * phiN + 1) / publicKey;
+
+    std::string privateKeyStr = privateKey.str();
+
+    for (int i = 0; i < privateKeyStr.size(); i++) {
+        if (i % 70 == 0) {
+            privateKeyStr.insert(i, "\n");
+        }
+    }
+
+    keysLabel2.setText("Private key:\n" + privateKeyStr);
+
+}
+
+bmp::int1024_t GUI::gcd(bmp::int1024_t a, bmp::int1024_t b) {
+    if (b == 0)
+        return a;
+    return gcd(b, a % b);
 }
