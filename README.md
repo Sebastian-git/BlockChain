@@ -15,3 +15,4 @@ Readme will be updated when project is completed with a full description.
 - Hash functions (asymmetric vs symmetric, SHA256, ECC, Diffie Hellman, Rabin-Miller Primality Test)
 - Explain modular exponentiation, and why its the only reason the RSA code works fast enough
 - Proof of work, computer networking, how each node/client verifies transactions
+- C++ threading library
