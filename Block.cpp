@@ -27,7 +27,35 @@ void Block::generateBlock(std::vector<std::string> data, RSA& rsa) {
 	
     addSignature(rsa);
     addRecipientPublicKey();
+    searchPrev();
 
+}
+
+void Block::searchPrev() {
+
+    // Check previous block's count and add one if it exists
+    std::ifstream file("chain.txt"); 
+    std::string line = "";
+
+    std::vector<std::string> blockContent;
+
+    while (std::getline(file, line)) {
+        if (line.find("UID") != std::string::npos) {
+            blockContent.clear();
+        }
+        blockContent.push_back(line);
+    }
+
+    if (blockContent.size() != 13) { // If this is the first block
+        headerInfo.merkleRoot = headerInfo.UID;
+        headerInfo.count = "1";
+        headerInfo.prevID = headerInfo.UID;
+    }
+    else { // Otherwise, update other headerInfo members
+        headerInfo.prevID = blockContent[0].substr(5);
+        headerInfo.count = std::to_string((std::stoi(blockContent[4].substr(7)) + 1));
+        headerInfo.merkleRoot = sha(blockContent[2].substr(12) + headerInfo.UID);
+    }
 }
 
 void Block::addSignature(RSA& rsa) {
@@ -88,16 +116,6 @@ void Block::addRecipientPublicKey() {
     if (line == "") std::cout << "Recipient does not exist.\n";
 
     file.close();
-}
-
-void Block::addPrevID() {
-
-}
-
-void Block::addMerkleRoot() {
-    /*
-    Merkle root will be unique hash based off previous blocks
-    */
 }
 
 void Block::displayBlockContent() {

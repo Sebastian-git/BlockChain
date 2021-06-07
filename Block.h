@@ -13,7 +13,7 @@ public:
 	struct headerInfo {
 		std::string UID;
 		std::string prevID; // Locally calculated. ID of previous block pulled from file
-		std::string merkleRoot; // Locally calculated. Hash of all information inside block
+		std::string merkleRoot; // Locally calculated. Hash of all previous blocks
 		std::string date; // Externally calculated. Date of transaction
 		std::string count;
 	} headerInfo;
@@ -37,8 +37,7 @@ private:
 
 	void addSignature(RSA& rsa); // Generates unique signature for sender using RSA
 	void addRecipientPublicKey(); // Pulls recipient's public key from accounts.txt to add to block's transfer info
-	void addPrevID(); // Searches for previous block's ID and adds to headerInfo
-	void addMerkleRoot(); // Searches for all previous blocks which influence a new ID, the merkle root
+	void searchPrev(); // Search previous blocks to find prevID, merkleRoot, count
 
 	int gcd(int a, int b); // Returns greatest common divisor, used in RSA
 

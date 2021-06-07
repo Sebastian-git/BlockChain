@@ -1,6 +1,7 @@
 #include "Save.h"
 #include "sha256.h"
 #include <fstream>
+#include <Windows.h>
 
 Save::Save() {}
 
@@ -36,13 +37,11 @@ void Save::saveBlock(Block& block) {
         std::ofstream out;
         out.open("chain.txt", std::ios_base::app);
 
-        out << "---------------------------Block 1--------------------------\n";
         out << "UID: " << block.headerInfo.UID << "\n";
         out << "prevID: " << block.headerInfo.prevID << "\n";
-        out << "merckleRoot: " << block.headerInfo.merkleRoot << "\n";
+        out << "merkleRoot: " << block.headerInfo.merkleRoot << "\n";
         out << "date: " << block.headerInfo.date << "\n";
         out << "count: " << block.headerInfo.count << "\n";
-        out << "------------------------TRANSFER INFO-------------------------\n";
         out << "signature: " << block.transferInfo.signature << "\n";
         out << "senderID: " << block.transferInfo.senderID << "\n";
         out << "senderPublicKeyExponent: " << block.transferInfo.senderPublicKeyExponent << "\n";
@@ -51,7 +50,6 @@ void Save::saveBlock(Block& block) {
         out << "recipientPublicKeyExponent: " << block.transferInfo.recipientPublicKeyExponent << "\n";
         out << "recipientPublicKeyModulus: " << block.transferInfo.recipientPublicKeyModulus << "\n";
         out << "quantity: " << block.transferInfo.quantity << "\n";
-        out << "--------------------------------------------------------------\n";
 
         out.close();
     }
