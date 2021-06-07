@@ -102,7 +102,7 @@ void Button::addEventHandler(sf::RenderWindow& window, sf::Event event) {
 			else if (text.getString().toAnsiString() == "Toggle") {
 				gui->toggleState();
 			} 
-			else if (text.getString().toAnsiString() == "Start" && !gui->state) {
+			else if (text.getString().toAnsiString() == "Start" && !gui->state && !gui->isPresenting) {
 				gui->RSAExplanation();
 			}
 		}

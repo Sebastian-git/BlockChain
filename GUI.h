@@ -28,6 +28,7 @@ public:
 	void RSAExplanation();
 
 	bool state; // True if showing transaction options, false if showing transaction list
+	bool isPresenting;
 
 private:
 

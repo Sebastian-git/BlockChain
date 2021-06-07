@@ -7,7 +7,7 @@
 
 namespace bmp = boost::multiprecision;
 
-GUI::GUI(Controller* controller) : windowSize(sf::Vector2f(1300, 800)), margin(20), usernameLabel(), usernameTextbox(this), passwordLabel(), passwordTextbox(this), recipientLabel(), recipientTextbox(this), quantityLabel(), quantityTextbox(this), dollarLabel(), controller(controller), submitButton(this), state(true), toggleButton(this), rsaExplanation(), primeOne(), primeTwo(), guessCountOne(), guessCountTwo(), startButton(this), rsaThreadP(), rsaThreadQ(), explanationThread(), n(), rsaThreadN(), clock(), delay(5), keysLabel(), rsaThreadKeys(), keysLabel2(){}
+GUI::GUI(Controller* controller) : windowSize(sf::Vector2f(1300, 800)), margin(20), usernameLabel(), usernameTextbox(this), passwordLabel(), passwordTextbox(this), recipientLabel(), recipientTextbox(this), quantityLabel(), quantityTextbox(this), dollarLabel(), controller(controller), submitButton(this), state(true), toggleButton(this), rsaExplanation(), primeOne(), primeTwo(), guessCountOne(), guessCountTwo(), startButton(this), rsaThreadP(), rsaThreadQ(), explanationThread(), n(), rsaThreadN(), clock(), delay(5), keysLabel(), rsaThreadKeys(), keysLabel2(), isPresenting(false) {}
 
 GUI::~GUI() {
     explanationThread.detach();
@@ -15,6 +15,7 @@ GUI::~GUI() {
     rsaThreadQ.detach();
     rsaThreadN.detach();
     rsaThreadKeys.detach();
+    std::exit(0);
 }
 
 void GUI::handleTransaction() {
@@ -190,6 +191,9 @@ void GUI::display() {
 }
 
 void GUI::RSAExplanation() {
+
+    isPresenting = true;
+
     explanationThread = std::thread(&GUI::explanation, this);
 }
 
@@ -248,6 +252,7 @@ void GUI::explanation() {
 
     // Generate keys
     rsaThreadKeys = std::thread(&GUI::keys, this, phiN, &e, &d);
+    isPresenting = false;
 }
 
 void GUI::randPrime(boost::multiprecision::int1024_t max, boost::multiprecision::int1024_t min, boost::multiprecision::int1024_t randNum, TextLabel* prime, TextLabel* guessCount, bmp::int1024_t* val) {
@@ -395,6 +400,11 @@ void GUI::keys(bmp::int1024_t phiN, bmp::int1024_t* e, bmp::int1024_t* d) {
 
     keysLabel2.setText("Private key:\n" + privateKeyStr);
 
+    clock.restart();
+    while (clock.getElapsedTime().asSeconds() != delay) {}
+
+    keysLabel.setText("");
+    keysLabel2.setText("");
 }
 
 bmp::int1024_t GUI::gcd(bmp::int1024_t a, bmp::int1024_t b) {
