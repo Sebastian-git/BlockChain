@@ -1,8 +1,11 @@
-# BlockChain
+# <a name="title"></a> BlockChain
 
-As a final project for my Computer Science: Data Structures and Algorithms class, I decided to try to implement a basic blockchain to explore cryptography, hash functions, and how blockchains actually work with a mix of SFML for graphics.
+### Introduction
+As a final project for my Computer Science: Data Structures and Algorithms class, I decided to try to implement a basic blockchain to explore cryptography, hash functions, and how cryptocurrencies actually work with a mix of SFML for graphics (my Professor loves SFML).
 
 
+
+<br><br>
 Readme will be updated when project is completed with a full description.
 
 
@@ -16,3 +19,46 @@ Readme will be updated when project is completed with a full description.
 - Explain modular exponentiation, and why its the only reason the RSA code works fast enough
 - Proof of work, computer networking, how each node/client verifies transactions
 - C++ threading library
+<br><br>
+
+
+### Usage
+
+
+##### Setup
+
+1 - Clone the master repository (```git clone https://github.com/Sebastian-git/BlockChain.git```) <br>
+2 - Install [C++](https://support.microsoft.com/en-us/topic/the-latest-supported-visual-c-downloads-2647da03-1eea-4433-9aff-95f26a218cc0) and a compiler (I use [Visual Studio](https://visualstudio.microsoft.com/downloads/), but [G++](https://gcc.gnu.org/) is also good) if you don't already have them <br>
+2 - Install SFML [here](https://www.sfml-dev.org/download/sfml/2.5.1/), and follow their [setup instructions](https://www.sfml-dev.org/tutorials/2.5/start-vc.php) <br>
+3 - Install Boost [here](https://www.boost.org/users/download/), and follow the instructions [below]() to make accessing the library easier
+
+##### Previews
+
+One fun feature is found after clicking the "toggle" button, which shows the entire process of generating RSA private and public keys in a sort of SFML powerpoint. Below is an image showing the generation of two large random prime numbers using the [Rabin-Miller Primality Test]() discussed below. <br>
+
+<img width="600" height="350" alt="portfolio_view" src="https://github.com/Sebastian-git/BlockChain/blob/master/readmeImages/primeGeneration1.png"> 
+
+<img width="450" height="300" alt="portfolio_view" src="https://github.com/Sebastian-git/BlockChain/blob/master/readmeImages/Screenshot_6.png"> <img width="450" height="300" alt="portfolio_view" src="https://github.com/Sebastian-git/BlockChain/blob/master/readmeImages/primeGeneration3.png"> 
+
+<br> The main portion of the program comes from what happens behind the main screen, which is just a transaction prompt. At first glance, this might not look very secure. However, the power of [RSA Encryption](), the [Merkle Root system]() that was implemented, and [Proof of Work]() makes the program as secure as any other cryptocurrency. 
+
+<img width="600" height="350" alt="portfolio_view" src="https://github.com/Sebastian-git/BlockChain/blob/master/readmeImages/transferDisplay.png"> 
+
+
+
+
+##### Technical Information 
+
+
+
+### Launch
+C++ 14
+Visual C++ 2019
+SFML 2.5.1
+Boost 1.76.0
+
+### Status: 
+
+In Progress 
+
+#### [back to the top](#title)
