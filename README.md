@@ -38,7 +38,7 @@ One fun feature is found after clicking the "toggle" button, which shows the ent
 
 <img width="600" height="350" alt="portfolio_view" src="https://github.com/Sebastian-git/BlockChain/blob/master/readmeImages/primeGeneration1.png"> 
 
-<img width="450" height="300" alt="portfolio_view" src="https://github.com/Sebastian-git/BlockChain/blob/master/readmeImages/Screenshot_6.png"> <img width="450" height="300" alt="portfolio_view" src="https://github.com/Sebastian-git/BlockChain/blob/master/readmeImages/primeGeneration3.png"> 
+<img width="400" height="300" alt="portfolio_view" src="https://github.com/Sebastian-git/BlockChain/blob/master/readmeImages/Screenshot_6.png"> <img width="400" height="300" alt="portfolio_view" src="https://github.com/Sebastian-git/BlockChain/blob/master/readmeImages/primeGeneration3.png"> 
 
 <br> The main portion of the program comes from what happens behind the main screen, which is just a transaction prompt. At first glance, this might not look very secure. However, the power of [RSA Encryption](), the [Merkle Root system]() that was implemented, and [Proof of Work]() makes the program as secure as any other cryptocurrency. 
 
