@@ -20,7 +20,7 @@ Documentation is split into [Usage](#usage) and [Technical Information](#techinf
 
 #### Previews
 
-One fun feature is found after clicking the "toggle" button, which shows the entire process of generating RSA private and public keys in a sort of SFML powerpoint. Below is an image showing the generation of two large random prime numbers using the [Rabin-Miller Primality Test]() discussed below. <br>
+One fun feature is found after clicking the "toggle" button, which shows the entire process of generating RSA private and public keys in a sort of SFML powerpoint. Below is an image showing the generation of two large random prime numbers using the [Rabin-Miller Primality Test](#primalitytest) discussed below. <br>
 
 <img width="600" height="350" alt="portfolio_view" src="https://github.com/Sebastian-git/BlockChain/blob/master/readmeImages/primeGeneration1.png"> 
 
@@ -45,15 +45,15 @@ The technical information I've researched while creating this project will be do
 - [Threading](#threading)
 
 #### Cryptography/Algorithms: 
-- [Hash Functions]()
-- [Rabin Miller Primality Test]()
-- [Modular Exponentiation]()
-- [Hash Trees and Merkle Roots]()
-- [Proof of Work]()
+- [Hash Functions](#hashfunctions)
+- [Rabin Miller Primality Test](#primalitytest)
+- [Modular Exponentiation](#modularexponentiation)
+- [Hash Trees and Merkle Roots](#hashtrees)
+- [Proof of Work](#proofofwork)
 
 #### Problems encountered:
-- [Elliptic Curve Cryptography]()
-- [Implementation of Proof of Work]()
+- [Elliptic Curve Cryptography](#eccproblem)
+- [Implementation of Proof of Work](#proofofwork)
 
 <hr>
 
@@ -143,7 +143,7 @@ My professor requested that we create our own graphical components using [SFML](
 
 <br>
 
-<a name="proofofwork"/>
+<a name="eccproblem"/>
 
 #### Elliptic Curve Cryptography
 
