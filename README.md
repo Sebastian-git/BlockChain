@@ -111,29 +111,28 @@ My professor requested that we create our own graphical components using [SFML](
 
 #### Hash Functions
 
+- Hash functions are used to store passwords locally, so that even if malicious users managed to get the accounts.txt file, it would be impossible to crack the passwords or usernames of other users.
+
 <br>
 
 <a name="primalitytest"/>
 
 #### Rabin Miller Primality Test
+- [The Rabin Miller Primality Test](https://www.geeksforgeeks.org/primality-test-set-3-miller-rabin/) is a critical component in the generation of RSA keys, as it is one of the only ways to efficiently generate random prime numbers. Essentially, it's a probability test that checks whether the numbers generated are prime which works a majority of the time and is how most random prime number generators work.
 
 <br>
 
 <a name="modularexponentiation"/>
 
 #### Modular Exponentiation
-
-<br>
-
-<a name="hashtrees"/>
-
-#### Hash Trees and Merkle Roots
+- [Modular Exponentiation](https://www.geeksforgeeks.org/modular-exponentiation-power-in-modular-arithmetic/) is another reason RSA key generation was so fast, for calculating the exponentials of such large prime numbers would take far too long. Luckily, Boost has several [built in functions](https://www.boost.org/doc/libs/1_66_0/libs/multiprecision/doc/html/boost_multiprecision/perf/int_real_world.html) for topics like this.
 
 <br>
 
 <a name="proofofwork"/>
 
 #### Proof of Work
+- The last form of security used in the program is [Proof of Work](https://www.investopedia.com/terms/p/proof-work.asp), which can be implemented to secure transactions in different ways. The main idea is that computers need to race to "mine" data (use their processing power to try different combinations of characters to achieve a specified hash value). The winning computer then gets a portion of the cryptocurrency as a reward, then shares the new "block" with the new specified hash. This was the last concept to be implemented on the program, but won't be because of how extensive the computer networking would be. 
 
 <br>
 
@@ -153,25 +152,6 @@ My professor requested that we create our own graphical components using [SFML](
 
 #### Implementation of Proof of Work
 
-
-
-<br><br>
-
-Readme will be updated when project is completed with a full description. Notes on how to complete the documentation are below and can be ignored.
-
-Merckle Roots and hash trees and efficiency, hash functions and SHA256 and ECC and diffie hellman and RSA, Rabin Miller Primality Test, Modular Exponentiation's CRITICAL role in RSA, proof of work, how each client verifies transactions
-
-## Topics that will be included in more detail in the README once the project is done:
-
-- Basic SFML features, new objects like Buttons, TextInputs, and Labels
-- Block object, how it distrbutes the "chain" to all clients to prevent fraud
-- Sockets (what SFML's .setBlocking() function does, how clients share the blockchain with the server)
-- Merckle roots/trees (what a hash tree is, efficiency compared to just hashing all values)
-- Hash functions (asymmetric vs symmetric, SHA256, ECC, Diffie Hellman, Rabin-Miller Primality Test)
-- Explain modular exponentiation, and why its the only reason the RSA code works fast enough
-- Proof of work, computer networking, how each node/client verifies transactions
-- C++ threading library
-<br><br>
 
 
 ### Launch
