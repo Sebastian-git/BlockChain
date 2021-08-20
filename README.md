@@ -51,10 +51,6 @@ The technical information I've researched while creating this project will be do
 - [Hash Trees and Merkle Roots](#hashtrees)
 - [Proof of Work](#proofofwork)
 
-#### Problems encountered:
-- [Elliptic Curve Cryptography](#eccproblem)
-- [Implementation of Proof of Work](#proofofwork)
-
 <hr>
 
 #### Objects / Libraries:
@@ -138,22 +134,6 @@ My professor requested that we create our own graphical components using [SFML](
 
 <hr>
 
-#### Problems encountered:
-
-<br>
-
-<a name="eccproblem"/>
-
-#### Elliptic Curve Cryptography
-
-<br>
-
-<a name="proofofwork"/>
-
-#### Implementation of Proof of Work
-
-
-
 ### Launch
 C++ 14 <br>
 Visual C++ 2019 <br>
@@ -162,6 +142,6 @@ Boost 1.76.0 <br>
 
 ### Status: 
 
-In Progress 
+Complete
 
 #### [back to the top](#title)
